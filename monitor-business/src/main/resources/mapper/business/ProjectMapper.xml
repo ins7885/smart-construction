@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.ProjectMapper">
+
+    <resultMap type="Project" id="ProjectResult">
+        <result property="projectId" column="project_id"/>
+        <result property="projectName" column="project_name"/>
+        <result property="projectType" column="project_type"/>
+        <result property="fundSource" column="fund_source"/>
+        <result property="permitNumber" column="permit_number"/>
+        <result property="address" column="address"/>
+        <result property="importance" column="importance"/>
+        <result property="monomerNumber" column="monomer_number"/>
+        <result property="planStartTime" column="plan_start_time"/>
+        <result property="planFinishedTime" column="plan_finished_time"/>
+        <result property="greenArea" column="green_area"/>
+        <result property="area" column="area"/>
+        <result property="cost" column="cost"/>
+        <result property="state" column="state"/>
+        <result property="lat" column="lat"/>
+        <result property="lon" column="lon"/>
+        <result property="startTime" column="start_time"/>
+        <result property="registerNumber" column="register_number"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <sql id="selectProjectVo">
+        select project_id,
+               project_name,
+               project_type,
+               fund_source,
+               permit_number,
+               address,
+               importance,
+               monomer_number,
+               plan_start_time,
+               plan_finished_time,
+               green_area,
+               area,
+               cost,
+               state,
+               lat,
+               lon,
+               start_time,
+               register_number,
+               del_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM tab_project
+    </sql>
+
+    <select id="selectProjectById" parameterType="Long" resultMap="ProjectResult">
+        <include refid="selectProjectVo"/>
+        where project_id = #{projectId}
+    </select>
+
+    <select id="selectProjectList" parameterType="Project" resultMap="ProjectResult">
+        <include refid="selectProjectVo"/>
+        <where>1 = 1
+            <if test="projectName != null and projectName != ''">
+                AND project_name like concat('%', #{projectName}, '%')
+            </if>
+            <if test="projectType != null and projectType != ''">
+                AND project_type = #{projectType}
+            </if>
+            <if test="permitNumber != null and permitNumber != ''">
+                AND permit_number like concat('%', #{permitNumber}, '%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insertProject" parameterType="Project" keyProperty="projectId" useGeneratedKeys="true">
+        insert into tab_project (
+        <if test="projectName != null and projectName != '' ">project_name,</if>
+        <if test="projectType != null and projectType != '' ">project_type,</if>
+        <if test="permitNumber != null and permitNumber != '' ">permit_number,</if>
+        <if test="importance != null and importance != ''">importance,</if>
+        <if test="area != null and area != ''">area,</if>
+        <if test="state != null and state != '' ">state,</if>
+        <if test="fundSource != null and fundSource != '' ">fund_source,</if>
+        <if test="address != null and address != '' ">address,</if>
+        <if test="monomerNumber != null">monomer_number,</if>
+        <if test="greenArea != null and greenArea != '' ">green_area,</if>
+        <if test="cost != null and cost != '' ">cost,</if>
+        <if test="lat != null and lat != '' ">lat,</if>
+        <if test="lon != null and lon != '' ">lon,</if>
+        <if test="registerNumber != null and registerNumber != '' ">register_number,</if>
+        <if test="planStartTime != null  ">plan_start_time,</if>
+        <if test="planFinishedTime != null  ">plan_finished_time,</if>
+        <if test="startTime != null ">start_time,</if>
+        <if test="province != null ">province,</if>
+        create_time
+        )values(
+        <if test="projectName != null and projectName != '' ">#{projectName},</if>
+        <if test="projectType != null and projectType != '' ">#{projectType},</if>
+        <if test="permitNumber != null and permitNumber != '' ">#{permitNumber},</if>
+        <if test="importance != null and importance != ''">#{importance},</if>
+        <if test="area != null and area != ''">#{area},</if>
+        <if test="state != null and state != '' ">#{state},</if>
+        <if test="fundSource != null and fundSource != '' ">#{fundSource},</if>
+        <if test="address != null and address != '' ">#{address},</if>
+        <if test="monomerNumber != null">#{monomerNumber},</if>
+        <if test="greenArea != null and greenArea != '' ">#{greenArea},</if>
+        <if test="cost != null and cost != '' ">#{cost},</if>
+        <if test="lat != null and lat != '' ">#{lat},</if>
+        <if test="lon != null and lon != '' ">#{lon},</if>
+        <if test="registerNumber != null ">#{registerNumber},</if>
+        <if test="planStartTime != null ">#{planStartTime},</if>
+        <if test="planFinishedTime != null ">#{planFinishedTime},</if>
+        <if test="startTime != null ">#{startTime},</if>
+        <if test="province != null ">#{province},</if>
+        sysdate()
+        )
+    </insert>
+
+    <update id="updateProject" parameterType="Project">
+        update tab_project
+        <set>
+            <if test="projectName != null and projectName != '' ">project_name = #{projectName},</if>
+            <if test="projectType != null and projectType != '' ">project_type = #{projectType},</if>
+            <if test="permitNumber != null and permitNumber != '' ">permit_number = #{permitNumber},</if>
+            <if test="importance != null">importance = #{importance},</if>
+            <if test="area != null and area != ''">area = #{area},</if>
+            <if test="state != null and state != '' ">state = #{state},</if>
+            <if test="fundSource != null and fundSource != '' ">fund_source = #{fundSource},</if>
+            <if test="address != null and address != '' ">address = #{address},</if>
+            <if test="monomerNumber != null">monomer_number = #{monomerNumber},</if>
+            <if test="greenArea != null and greenArea != '' ">green_area = #{greenArea},</if>
+            <if test="cost != null and cost != '' ">cost = #{cost},</if>
+            <if test="lat != null and lat != '' ">lat = #{lat},</if>
+            <if test="lon != null and lon != '' ">lon = #{lon},</if>
+            <if test="registerNumber != null and registerNumber != '' ">register_number = #{registerNumber},</if>
+            <if test="planStartTime != null ">plan_start_time = #{planStartTime},</if>
+            <if test="planFinishedTime != null ">plan_finished_time = #{planFinishedTime},</if>
+            <if test="startTime != null ">start_time = #{startTime},</if>
+            <if test="province != null ">province = #{province},</if>
+            update_time = sysdate()
+        </set>
+        where project_id = #{projectId}
+    </update>
+
+    <delete id="deleteProjectById" parameterType="Long">
+        delete
+        from tab_project
+        where project_id = #{projectId}
+    </delete>
+
+    <delete id="deleteProjectByIds" parameterType="Long">
+        delete from tab_project where project_id in
+        <foreach item="projectId" collection="array" open="(" separator="," close=")">
+            #{projectId}
+        </foreach>
+    </delete>
+
+    <select id="getWarnCont" resultType="java.lang.Integer">
+        --         SELECT
+--             COUNT( t.project_id )
+--         FROM
+--             (
+--             SELECT DISTINCT
+--                 tp.project_id,
+--                 tw.warn_id
+--             FROM
+--                 tab_project tp
+--                 LEFT JOIN tab_climb_frame tc ON tp.project_id = tc.project_id
+--                 LEFT JOIN tab_device td ON tc.climb_frame_id = td.climb_frame_id
+--                 LEFT JOIN tab_point tpo ON td.device_id = tpo.device_id
+--                 LEFT JOIN tab_warn tw ON tpo.point_id = tw.point_id
+--             ) t
+--         WHERE
+--             t.warn_id IS NOT NULL
+        SELECT COUNT(t.project_id)
+        FROM (
+                 SELECT DISTINCT tp.project_id,
+                                 tw.warn_id
+                 FROM tab_project tp
+                          LEFT JOIN tab_climb_frame tc ON tp.project_id = tc.project_id
+                          LEFT JOIN tab_monitor_point tmp ON tc.climb_frame_id = tmp.climb_frame_id
+                          LEFT JOIN tab_warn tw ON tmp.monitor_pid = tw.point_id
+             ) t
+        WHERE t.warn_id IS NOT NULL
+    </select>
+
+    <select id="getProjectCount" resultType="java.lang.Integer">
+        SELECT COUNT(project_id) FROM tab_project
+    </select>
+
+    <select id="getProjectProvince" resultType="com.zkjd.business.vo.ProjectVO">
+        SELECT
+            count( province ) number,
+            province
+        FROM
+            tab_project
+        GROUP BY
+            province
+    </select>
+</mapper> 

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.ModelPointMapper">
+    
+    <resultMap type="ModelPoint" id="ModelPointResult">
+        <result property="modelPointId"    column="model_point_id"    />
+        <result property="modelId"    column="model_id"    />
+        <result property="dipAngle"    column="dip_angle"    />
+        <result property="windSpeed"    column="wind_speed"    />
+        <result property="position"    column="position"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="monitorPid"    column="monitor_pid"    />
+        <result property="monitorType"    column="monitor_type"    />
+    </resultMap>
+
+    <sql id="selectModelPointVo">
+        select model_point_id, model_id, dip_angle, wind_speed, position, del_flag, create_by, create_time, update_by, update_time, remark, monitor_pid, monitor_type from tab_model_point
+    </sql>
+
+    <select id="selectModelPointList" parameterType="ModelPoint" resultMap="ModelPointResult">
+        <include refid="selectModelPointVo"/>
+        <where>  
+            <if test="modelId != null "> and model_id = #{modelId}</if>
+            <if test="dipAngle != null "> and dip_angle = #{dipAngle}</if>
+            <if test="windSpeed != null "> and wind_speed = #{windSpeed}</if>
+            <if test="position != null  and position != ''"> and position = #{position}</if>
+        </where>
+    </select>
+    
+    <select id="selectModelPointByModelPointId" parameterType="Long" resultMap="ModelPointResult">
+        <include refid="selectModelPointVo"/>
+        where model_point_id = #{modelPointId}
+    </select>
+
+    <select id="selectModelPointByModelId" parameterType="Long" resultMap="ModelPointResult">
+        <include refid="selectModelPointVo"/>
+        where model_id = #{modelId}
+    </select>
+        
+    <insert id="insertModelPoint" parameterType="ModelPoint">
+        insert into tab_model_point
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="modelId != null">model_id,</if>
+            <if test="dipAngle != null">dip_angle,</if>
+            <if test="windSpeed != null">wind_speed,</if>
+            <if test="position != null">position,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="monitorPid != null">monitor_pid,</if>
+            <if test="monitorType != null">monitor_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="modelId != null">#{modelId},</if>
+            <if test="dipAngle != null">#{dipAngle},</if>
+            <if test="windSpeed != null">#{windSpeed},</if>
+            <if test="position != null">#{position},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="monitorPid != null">#{monitorPid},</if>
+            <if test="monitorType != null">#{monitorType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateModelPoint" parameterType="ModelPoint">
+        update tab_model_point
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="dipAngle != null">dip_angle = #{dipAngle},</if>
+            <if test="windSpeed != null">wind_speed = #{windSpeed},</if>
+            <if test="position != null">position = #{position},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="monitorPid != null">monitor_pid = #{monitorPid},</if>
+            <if test="monitorType != null">monitor_type = #{monitorType},</if>
+        </trim>
+        where model_point_id = #{modelPointId}
+    </update>
+
+    <delete id="deleteModelPointByModelPointId" parameterType="Long">
+        delete from tab_model_point where model_point_id = #{modelPointId}
+    </delete>
+
+    <delete id="deleteModelPointByModelPointIds" parameterType="Long">
+        delete from tab_model_point where model_point_id in 
+        <foreach item="modelPointId" collection="array" open="(" separator="," close=")">
+            #{modelPointId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteModelPointByModelIds" parameterType="Long">
+        delete from tab_model_point where model_id in
+        <foreach item="modelId" collection="array" open="(" separator="," close=")">
+            #{modelId}
+        </foreach>
+    </delete>
+</mapper>

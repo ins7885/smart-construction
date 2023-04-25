@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.AppVersionMapper">
+
+    <resultMap type="AppVersion" id="AppVersionResult">
+        <result property="id" column="id"/>
+        <result property="versionCode" column="version_code"/>
+        <result property="versionUrl" column="version_url"/>
+        <result property="remark" column="remark"/>
+        <result property="isCurrent" column="is_current"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <sql id="selectAppVersionVo">
+        select id,
+               version_code,
+               version_url,
+               remark,
+               is_current,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               del_flag
+        from tab_app_version
+    </sql>
+
+    <select id="selectAppVersionList" parameterType="AppVersion" resultMap="AppVersionResult">
+        <include refid="selectAppVersionVo"/>
+        <where>
+            <if test="versionCode != null  and versionCode != ''">and version_code  LIKE CONCAT(CONCAT('%', #{versionCode}), '%')</if>
+            <if test="versionUrl != null  and versionUrl != ''">and version_url = #{versionUrl}</if>
+            <if test="isCurrent != null  and isCurrent != ''">and is_current = #{isCurrent}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectAppVersionById" parameterType="Long" resultMap="AppVersionResult">
+        <include refid="selectAppVersionVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertAppVersion" parameterType="AppVersion" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_app_version
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="versionCode != null">version_code,</if>
+            <if test="versionUrl != null">version_url,</if>
+            <if test="remark != null">remark,</if>
+            <if test="isCurrent != null">is_current,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="versionCode != null">#{versionCode},</if>
+            <if test="versionUrl != null">#{versionUrl},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="isCurrent != null">#{isCurrent},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAppVersion" parameterType="AppVersion">
+        update tab_app_version
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="versionCode != null">version_code = #{versionCode},</if>
+            <if test="versionUrl != null">version_url = #{versionUrl},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="isCurrent != null">is_current = #{isCurrent},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateAppOldVersion" parameterType="AppVersion">
+        update tab_app_version
+        set is_current = 2
+        where id != #{id} and is_current = 1
+    </update>
+
+    <delete id="deleteAppVersionById" parameterType="Long">
+        delete
+        from tab_app_version
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteAppVersionByIds" parameterType="String">
+        delete from tab_app_version where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

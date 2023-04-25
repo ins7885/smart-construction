@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.ModelMapper">
+    
+    <resultMap type="Model" id="ModelResult">
+        <result property="modelId"    column="model_id"    />
+        <result property="modelName"    column="model_name"    />
+        <result property="modelCode"    column="model_code"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="climbFrameName"    column="climb_frame_name"    />
+        <result property="projectId"    column="project_id"    />
+        <result property="projectName" column="project_name"/>
+        <result property="climbFrameId"    column="climb_frame_id"    />
+        <result property="fileId"    column="file_id"    />
+    </resultMap>
+
+    <sql id="selectModelVo">
+        SELECT
+            model_id,
+            model_name,
+            model_code,
+            del_flag,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            project_id,
+            ( SELECT tp.project_name FROM tab_project tp WHERE tp.project_id = tm.project_id ) project_name,
+            climb_frame_id,
+            climb_frame_name,
+            file_id
+        FROM
+            tab_model tm
+	</sql>
+
+    <select id="selectModelList" parameterType="Model" resultMap="ModelResult">
+        <include refid="selectModelVo"/>
+        <where>
+            <if test="projectId != null ">and tm.project_id = #{projectId}</if>
+            <if test="modelName != null  and modelName != ''"> and tm.model_name like concat('%', #{modelName}, '%')</if>
+            <if test="modelCode != null  and modelCode != ''"> and tm.model_code = #{modelCode}</if>
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="selectModelByModelId" parameterType="Long" resultMap="ModelResult">
+        <include refid="selectModelVo"/>
+        where model_id = #{modelId}
+    </select>
+        
+    <insert id="insertModel" parameterType="Model" useGeneratedKeys="true" keyProperty="modelId" keyColumn="model_id">
+        insert into tab_model
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="modelName != null">model_name,</if>
+            <if test="modelCode != null">model_code,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="climbFrameId != null">climb_frame_id,</if>
+            <if test="projectId != null">project_id,</if>
+            <if test="climbFrameName != null">climb_frame_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="modelName != null">#{modelName},</if>
+            <if test="modelCode != null">#{modelCode},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="climbFrameId != null">#{climbFrameId},</if>
+            <if test="projectId != null">#{projectId},</if>
+            <if test="climbFrameName != null">#{climbFrameName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateModel" parameterType="Model">
+        update tab_model
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="modelName != null">model_name = #{modelName},</if>
+            <if test="modelCode != null">model_code = #{modelCode},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="climbFrameId != null">climb_frame_id = #{climbFrameId},</if>
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="climbFrameName != null">climb_frame_name = #{climbFrameName},</if>
+            <if test="fileId != null">file_id = #{fileId},</if>
+        </trim>
+        where model_id = #{modelId}
+    </update>
+
+    <delete id="deleteModelByModelId" parameterType="Long">
+        delete from tab_model where model_id = #{modelId}
+    </delete>
+
+    <delete id="deleteModelByModelIds" parameterType="Long">
+        delete from tab_model where model_id in 
+        <foreach item="modelId" collection="array" open="(" separator="," close=")">
+            #{modelId}
+        </foreach>
+    </delete>
+</mapper>

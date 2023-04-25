@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.DangerCheckMapper">
+
+    <resultMap type="DangerCheck" id="DangerCheckResult">
+        <result property="id" column="id"/>
+        <result property="checkMan" column="check_man"/>
+        <result property="checkTime" column="check_time"/>
+        <result property="dutyArea" column="duty_area"/>
+        <result property="dutyUnit" column="duty_unit"/>
+        <result property="problemDesc" column="problem_desc"/>
+        <result property="remark" column="remark"/>
+        <result property="problemType" column="problem_type"/>
+        <result property="problemCut" column="problem_cut"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="modifyTime" column="modify_time"/>
+        <result property="modifiedTime" column="modified_time"/>
+        <result property="modifyMan" column="modify_man"/>
+        <result property="modifyRequest" column="modify_request"/>
+        <result property="reviewMan" column="review_man"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="status" column="status"/>
+        <result property="modifyContent" column="modify_content"/>
+        <result property="modifyImage" column="modify_image"/>
+        <result property="reviewResult" column="review_result"/>
+        <result property="reviewRemark" column="review_remark"/>
+        <result property="reviewImage" column="review_image"/>
+        <result property="checkManId" column="check_man_id"/>
+        <result property="modifyManId" column="modify_man_id"/>
+        <result property="reviewManId" column="review_man_id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="projectName" column="project_name"/>
+    </resultMap>
+
+    <sql id="selectDangerCheckVo">
+        select id,
+               check_man,
+               check_time,
+               duty_area,
+               duty_unit,
+               problem_desc,
+               remark,
+               problem_type,
+               problem_cut,
+               image_url,
+               modify_time,
+               modified_time,
+               modify_man,
+               modify_request,
+               review_man,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               del_flag,
+               status,
+               modify_content,
+               modify_image,
+               review_result,
+               review_remark,
+               review_image,
+               check_man_id,
+               modify_man_id,
+               review_man_id,
+               project_id,
+               project_name
+        from tab_danger_check
+    </sql>
+
+    <select id="selectDangerCheckList" parameterType="DangerCheck" resultMap="DangerCheckResult">
+        <include refid="selectDangerCheckVo"/>
+        <where>
+            <if test="checkMan != null  and checkMan != ''">and check_man = #{checkMan}</if>
+            <if test="checkTime != null ">and check_time = #{checkTime}</if>
+            <if test="dutyArea != null  and dutyArea != ''">and duty_area = #{dutyArea}</if>
+            <if test="dutyUnit != null  and dutyUnit != ''">and duty_unit = #{dutyUnit}</if>
+            <if test="problemDesc != null  and problemDesc != ''">and problem_desc = #{problemDesc}</if>
+            <if test="problemType != null  and problemType != ''">and problem_type = #{problemType}</if>
+            <if test="problemCut != null  and problemCut != ''">and problem_cut = #{problemCut}</if>
+            <if test="imageUrl != null  and imageUrl != ''">and image_url = #{imageUrl}</if>
+            <if test="modifyTime != null ">and modify_time = #{modifyTime}</if>
+            <if test="modifiedTime != null ">and modified_time = #{modifiedTime}</if>
+            <if test="modifyMan != null  and modifyMan != ''">and modify_man = #{modifyMan}</if>
+            <if test="modifyRequest != null  and modifyRequest != ''">and modify_request = #{modifyRequest}</if>
+            <if test="reviewMan != null  and reviewMan != ''">and review_man = #{reviewMan}</if>
+            <if test="status != null ">and status = #{status}</if>
+            <if test="modifyContent != null  and modifyContent != ''">and modify_content = #{modifyContent}</if>
+            <if test="modifyImage != null  and modifyImage != ''">and modify_image = #{modifyImage}</if>
+            <if test="reviewResult != null ">and review_result = #{reviewResult}</if>
+            <if test="reviewRemark != null  and reviewRemark != ''">and review_remark = #{reviewRemark}</if>
+            <if test="reviewImage != null  and reviewImage != ''">and review_image = #{reviewImage}</if>
+            <if test="checkManId != null ">and check_man_id = #{checkManId}</if>
+            <if test="modifyManId != null ">and modify_man_id = #{modifyManId}</if>
+            <if test="reviewManId != null ">and review_man_id = #{reviewManId}</if>
+            <if test="projectId != null ">and project_id = #{projectId}</if>
+            <if test="projectName != null ">and project_name = #{projectName}</if>
+            <if test="params.startTime != null and params.startTime != ''">
+                and date_format(check_time,'%y%m%d') &gt;= date_format(#{params.startTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                and date_format(check_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectDangerCheckById" parameterType="Long" resultMap="DangerCheckResult">
+        <include refid="selectDangerCheckVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDangerCheck" parameterType="DangerCheck" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_danger_check
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="checkMan != null">check_man,</if>
+            <if test="checkTime != null">check_time,</if>
+            <if test="dutyArea != null">duty_area,</if>
+            <if test="dutyUnit != null">duty_unit,</if>
+            <if test="problemDesc != null">problem_desc,</if>
+            <if test="remark != null">remark,</if>
+            <if test="problemType != null">problem_type,</if>
+            <if test="problemCut != null">problem_cut,</if>
+            <if test="imageUrl != null">image_url,</if>
+            <if test="modifyTime != null">modify_time,</if>
+            <if test="modifiedTime != null">modified_time,</if>
+            <if test="modifyMan != null">modify_man,</if>
+            <if test="modifyRequest != null">modify_request,</if>
+            <if test="reviewMan != null">review_man,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="status != null">status,</if>
+            <if test="modifyContent != null">modify_content,</if>
+            <if test="modifyImage != null">modify_image,</if>
+            <if test="reviewResult != null">review_result,</if>
+            <if test="reviewRemark != null">review_remark,</if>
+            <if test="reviewImage != null">review_image,</if>
+            <if test="checkManId != null">check_man_id,</if>
+            <if test="modifyManId != null">modify_man_id,</if>
+            <if test="reviewManId != null">review_man_id,</if>
+            <if test="projectId != null">project_id,</if>
+            <if test="projectName != null">project_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="checkMan != null">#{checkMan},</if>
+            <if test="checkTime != null">#{checkTime},</if>
+            <if test="dutyArea != null">#{dutyArea},</if>
+            <if test="dutyUnit != null">#{dutyUnit},</if>
+            <if test="problemDesc != null">#{problemDesc},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="problemType != null">#{problemType},</if>
+            <if test="problemCut != null">#{problemCut},</if>
+            <if test="imageUrl != null">#{imageUrl},</if>
+            <if test="modifyTime != null">#{modifyTime},</if>
+            <if test="modifiedTime != null">#{modifiedTime},</if>
+            <if test="modifyMan != null">#{modifyMan},</if>
+            <if test="modifyRequest != null">#{modifyRequest},</if>
+            <if test="reviewMan != null">#{reviewMan},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="status != null">#{status},</if>
+            <if test="modifyContent != null">#{modifyContent},</if>
+            <if test="modifyImage != null">#{modifyImage},</if>
+            <if test="reviewResult != null">#{reviewResult},</if>
+            <if test="reviewRemark != null">#{reviewRemark},</if>
+            <if test="reviewImage != null">#{reviewImage},</if>
+            <if test="checkManId != null">#{checkManId},</if>
+            <if test="modifyManId != null">#{modifyManId},</if>
+            <if test="reviewManId != null">#{reviewManId},</if>
+            <if test="projectId != null">#{projectId},</if>
+            <if test="projectName != null">#{projectName},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDangerCheck" parameterType="DangerCheck">
+        update tab_danger_check
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="checkMan != null">check_man = #{checkMan},</if>
+            <if test="checkTime != null">check_time = #{checkTime},</if>
+            <if test="dutyArea != null">duty_area = #{dutyArea},</if>
+            <if test="dutyUnit != null">duty_unit = #{dutyUnit},</if>
+            <if test="problemDesc != null">problem_desc = #{problemDesc},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="problemType != null">problem_type = #{problemType},</if>
+            <if test="problemCut != null">problem_cut = #{problemCut},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+            <if test="modifiedTime != null">modified_time = #{modifiedTime},</if>
+            <if test="modifyMan != null">modify_man = #{modifyMan},</if>
+            <if test="modifyRequest != null">modify_request = #{modifyRequest},</if>
+            <if test="reviewMan != null">review_man = #{reviewMan},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="modifyContent != null">modify_content = #{modifyContent},</if>
+            <if test="modifyImage != null">modify_image = #{modifyImage},</if>
+            <if test="reviewResult != null">review_result = #{reviewResult},</if>
+            <if test="reviewRemark != null">review_remark = #{reviewRemark},</if>
+            <if test="reviewImage != null">review_image = #{reviewImage},</if>
+            <if test="checkManId != null">check_man_id = #{checkManId},</if>
+            <if test="modifyManId != null">modify_man_id = #{modifyManId},</if>
+            <if test="reviewManId != null">review_man_id = #{reviewManId},</if>
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="projectName != null">project_name = #{projectName},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDangerCheckById" parameterType="Long">
+        delete
+        from tab_danger_check
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteDangerCheckByIds" parameterType="String">
+        delete from tab_danger_check where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--获取自己提交的安全隐患检查记录-->
+    <select id="getDangerCheckOwnerList" resultType="com.zkjd.business.domain.DangerCheck">
+        select *
+        from tab_danger_check
+        where del_flag = 0
+          and check_man_id = #{checkManId}
+        order by create_time desc limit #{page}, #{pageSize}
+    </select>
+
+    <!--待整改记录-->
+    <select id="getWaitModifyList" resultType="com.zkjd.business.domain.DangerCheck">
+        select *
+        from tab_danger_check
+        where del_flag = 0
+          and modify_man_id = #{modifyManId}
+          and status = 1
+        order by create_time desc limit #{page}, #{pageSize}
+    </select>
+
+    <!--待复查记录-->
+    <select id="getWaitReviewList" resultType="com.zkjd.business.domain.DangerCheck">
+        select *
+        from tab_danger_check
+        where del_flag = 0
+          and review_man_id = #{reviewManId}
+          and status = 2
+        order by create_time desc limit #{page}, #{pageSize}
+    </select>
+
+    <!--已完结记录-->
+    <select id="getCompletedList" resultType="com.zkjd.business.domain.DangerCheck">
+        select *
+        from tab_danger_check
+        where del_flag = 0
+          and review_man_id = #{reviewManId}
+          and status = 3
+        order by create_time desc limit #{page}, #{pageSize}
+    </select>
+
+    <!--安全检查总数-->
+    <select id="getSafeNumberAll" parameterType="com.zkjd.business.qo.StatisticsQO" resultType="integer">
+        select count(1)
+        from tab_danger_check
+        where project_id = #{projectId} and date_format(check_time, '%Y-%m-%d') between #{startTime} and #{endTime}
+    </select>
+
+    <!--安全检查整改数-->
+    <select id="getSafeModifyNumber" parameterType="com.zkjd.business.qo.StatisticsQO" resultType="integer">
+        select count(1)
+        from tab_danger_check
+        where status = 2 and project_id = #{projectId}
+          and date_format(check_time, '%Y-%m-%d') between #{startTime} and #{endTime}
+    </select>
+
+    <!--安全检查验收数-->
+    <select id="getSafePassNumber" parameterType="com.zkjd.business.qo.StatisticsQO" resultType="integer">
+        select count(1)
+        from tab_danger_check
+        where status = 3 and project_id = #{projectId}
+          and date_format(check_time, '%Y-%m-%d') between #{startTime} and #{endTime}
+    </select>
+
+
+</mapper>

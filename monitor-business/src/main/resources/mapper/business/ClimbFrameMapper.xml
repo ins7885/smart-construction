@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.ClimbFrameMapper">
+
+    <resultMap type="ClimbFrame" id="ClimbFrameResult">
+        <result property="climbFrameId" column="climb_frame_id"/>
+        <result property="climbFrameName" column="climb_frame_name"/>
+        <result property="climbFrameType" column="climb_frame_type"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="projectId" column="project_id"/>
+        <result property="monomerId" column="monomer_id"/>
+        <result property="monomer" column="monomer"/>
+        <result property="installState" column="install_state"/>
+        <result property="modelId" column="model_id"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="imageName" column="image_name"/>
+        <result property="operator" column="operator"/>
+        <result property="phone" column="phone"/>
+        <result property="lockState" column="lock_state"/>
+        <result property="deviceSerial" column="device_serial"/>
+        <result property="devicePassword" column="device_password"/>
+        <result property="deviceNo" column="device_no"/>
+        <result property="deviceMac" column="device_mac"/>
+    </resultMap>
+
+    <sql id="selectClimbFrameVo">
+        select climb_frame_id,climb_frame_name,climb_frame_type,del_flag,create_by,
+        create_time,update_by,update_time,remark,project_id,monomer_id,monomer,install_state,
+        model_id,image_url,image_name,operator,phone,lock_state,device_serial,device_password,
+        device_no,device_mac
+        from tab_climb_frame
+    </sql>
+
+    <select id="selectClimbFrameById" parameterType="Long" resultMap="ClimbFrameResult">
+        <include refid="selectClimbFrameVo"/>
+        where climb_frame_id = #{climbFrameId}
+    </select>
+
+    <select id="selectClimbFrameList" parameterType="ClimbFrame" resultMap="ClimbFrameResult">
+        <include refid="selectClimbFrameVo"/>
+        <where>
+            <if test="climbFrameName != null and climbFrameName != ''">
+                AND climb_frame_name like concat('%', #{climbFrameName}, '%')
+            </if>
+            <if test="climbFrameType != null and climbFrameType != ''">
+                AND climb_frame_type = #{climbFrameType}
+            </if>
+            <if test="projectId != null and projectId != ''">
+                AND project_id = #{projectId}
+            </if>
+            <if test="installState != null and installState != ''">
+                AND install_state = #{installState}
+            </if>
+            <if test="lockState != null and lockState != ''">
+                AND lock_state = #{lockState}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insertClimbFrame" parameterType="ClimbFrame">
+        insert into tab_climb_frame (
+        <if test="climbFrameName != null and climbFrameName != '' ">climb_frame_name,</if>
+        <if test="climbFrameType != null and climbFrameType != '' ">climb_frame_type,</if>
+        <if test="projectId != null  ">project_id,</if>
+        <if test="monomerId != null  ">monomer_id,</if>
+        <if test="monomer != null and monomer != '' ">monomer,</if>
+        <if test="installState != null and installState != '' ">install_state,</if>
+        <if test="modelId != null ">model_id,</if>
+        <if test="imageUrl != null and imageUrl != ''">image_url,</if>
+        <if test="imageName != null and imageName != ''">image_name,</if>
+        <if test="operator != null and operator != ''">operator,</if>
+        <if test="phone != null and phone != ''">phone,</if>
+        <if test="lockState != null and lockState != '' ">lock_state,</if>
+        <if test="deviceSerial != null and deviceSerial != ''">device_serial,</if>
+        <if test="devicePassword != null and devicePassword != '' ">device_password,</if>
+        <if test="deviceNo != null and deviceNo != ''">device_no,</if>
+        <if test="deviceMac != null and deviceMac != '' ">device_mac,</if>
+        create_time
+        )values(
+        <if test="climbFrameName != null and climbFrameName != '' ">#{climbFrameName},</if>
+        <if test="climbFrameType != null and climbFrameType != '' ">#{climbFrameType},</if>
+        <if test="projectId != null ">#{projectId},</if>
+        <if test="monomerId != null ">#{monomerId},</if>
+        <if test="monomer != null and monomer != '' ">#{monomer},</if>
+        <if test="installState != null and installState != '' ">#{installState},</if>
+        <if test="modelId != null ">#{modelId},</if>
+        <if test="imageUrl != null and imageUrl != ''">#{imageUrl},</if>
+        <if test="imageName != null and imageName != ''">#{imageName},</if>
+        <if test="operator != null and operator != ''">#{operator},</if>
+        <if test="phone != null and phone != ''">#{phone},</if>
+        <if test="lockState != null and lockState != ''">#{lockState},</if>
+        <if test="deviceSerial != null and deviceSerial != ''">#{deviceSerial},</if>
+        <if test="devicePassword != null and devicePassword != ''">#{devicePassword},</if>
+        <if test="deviceNo != null and deviceNo != ''">#{deviceNo},</if>
+        <if test="deviceMac != null and deviceMac != ''">#{deviceMac},</if>
+        sysdate()
+        )
+    </insert>
+
+    <update id="updateClimbFrame" parameterType="ClimbFrame">
+        update tab_climb_frame
+        <set>
+            <if test="climbFrameName != null and climbFrameName != '' ">climb_frame_name = #{climbFrameName},</if>
+            <if test="climbFrameType != null and climbFrameType != '' ">climb_frame_type = #{climbFrameType},</if>
+            <if test="projectId != null ">project_id = #{projectId},</if>
+            monomer_id = #{monomerId},
+            monomer = #{monomer},
+            <if test="installState != null and installState != '' ">install_state = #{installState},</if>
+            <if test="modelId != null ">model_id = #{modelId},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="imageName != null">image_name = #{imageName},</if>
+            <if test="operator != null">operator = #{operator},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="lockState != null and lockState != '' ">lock_state = #{lockState},</if>
+            <if test="deviceSerial != null">device_serial = #{deviceSerial},</if>
+            <if test="devicePassword != null ">device_password = #{devicePassword},</if>
+            <if test="deviceNo != null ">device_no = #{deviceNo},</if>
+            <if test="deviceMac != null ">device_mac = #{deviceMac},</if>
+            update_time = sysdate()
+        </set>
+        where climb_frame_id = #{climbFrameId}
+    </update>
+
+    <delete id="deleteClimbFrameById" parameterType="Long">
+        delete from tab_climb_frame where climb_frame_id = #{climbFrameId}
+    </delete>
+
+    <delete id="deleteClimbFrameByIds" parameterType="Long">
+        delete from tab_climb_frame where climb_frame_id in
+        <foreach item="climbFrameId" collection="array" open="(" separator="," close=")">
+            #{climbFrameId}
+        </foreach>
+    </delete>
+
+    <select id="selectCurrentYear" resultType="com.zkjd.business.vo.ClimbFrameVO">
+        SELECT
+        climb_frame_id, create_time ,install_state,DATE_FORMAT( create_time, '%Y-%m' ) month
+        FROM
+        tab_climb_frame
+        WHERE
+        DATE_FORMAT( create_time, '%Y' ) = DATE_FORMAT(NOW(),'%Y')
+    </select>
+
+    <select id="getListByProjectId" parameterType="Long" resultMap="ClimbFrameResult">
+        <include refid="selectClimbFrameVo"/>
+        where project_id = #{projectId}
+    </select>
+
+    <select id="getClimbFrameCount" resultType="integer">
+        SELECT COUNT(climb_frame_id) FROM tab_climb_frame
+    </select>
+
+    <select id="getCountByMonomerIds" resultType="integer">
+        SELECT COUNT(climb_frame_id) FROM tab_climb_frame WHERE monomer_id
+        IN
+        <foreach collection="list" item="item"
+                 separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="checkDeviceSerialUnique" parameterType="String" resultType="int">
+        select count(1) from tab_climb_frame where device_serial = #{deviceSerial} limit 1
+    </select>
+</mapper> 

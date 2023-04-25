@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.RiseCheckMapper">
+
+    <resultMap type="RiseCheck" id="RiseCheckResult">
+        <result property="id" column="id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="projectId" column="project_id"/>
+        <result property="projectName" column="project_name"/>
+        <result property="climbFrameId" column="climb_frame_id"/>
+        <result property="monomer" column="monomer"/>
+        <result property="structure" column="structure"/>
+        <result property="deviceName" column="device_name"/>
+        <result property="model" column="model"/>
+        <result property="productUnit" column="product_unit"/>
+        <result property="riseDate" column="rise_date"/>
+        <result property="checkDate" column="check_date"/>
+        <result property="riseFloor" column="rise_floor"/>
+        <result property="riseNumber" column="rise_number"/>
+        <result property="generalUnit" column="general_unit"/>
+        <result property="projectMan" column="project_man"/>
+        <result property="underUnit" column="under_unit"/>
+        <result property="underUnitMan" column="under_unit_man"/>
+        <result property="checkConclusion" column="check_conclusion"/>
+        <result property="erectionManSign" column="erection_man_sign"/>
+        <result property="monomerCheckSign" column="monomer_check_sign"/>
+        <result property="projectManagerSign" column="project_manager_sign"/>
+        <result property="projectSafeSign" column="project_safe_sign"/>
+        <result property="productionSign" column="production_sign"/>
+        <result property="dictType" column="dict_type"/>
+        <result property="climbFrameName" column="climb_frame_name"/>
+    </resultMap>
+
+    <sql id="selectRiseCheckVo">
+        select id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               del_flag,
+               project_id,
+               project_name,
+               climb_frame_id,
+               climb_frame_name,
+               monomer,
+               structure,
+               device_name,
+               model,
+               product_unit,
+               rise_date,
+               check_date,
+               rise_floor,
+               rise_number,
+               general_unit,
+               project_man,
+               under_unit,
+               under_unit_man,
+               check_conclusion,
+               erection_man_sign,
+               monomer_check_sign,
+               project_manager_sign,
+               project_safe_sign,
+               production_sign,
+               dict_type
+        from tab_rise_check
+    </sql>
+
+    <select id="selectRiseCheckList" parameterType="RiseCheck" resultMap="RiseCheckResult">
+        <include refid="selectRiseCheckVo"/>
+        <where>
+            del_flag = 0
+            <if test="projectId != null ">and project_id = #{projectId}</if>
+            <if test="projectName != null  and projectName != ''">and project_name like concat('%', #{projectName},
+                '%')
+            </if>
+            <if test="climbFrameId != null ">and climb_frame_id = #{climbFrameId}</if>
+            <if test="monomer != null  and monomer != ''">and monomer = #{monomer}</if>
+            <if test="climbFrameName != null  and climbFrameName != ''">and climb_frame_name = #{climbFrameName}</if>
+            <if test="structure != null  and structure != ''">and structure = #{structure}</if>
+            <if test="deviceName != null  and deviceName != ''">and device_name like concat('%', #{deviceName}, '%')
+            </if>
+            <if test="model != null  and model != ''">and model = #{model}</if>
+            <if test="productUnit != null  and productUnit != ''">and product_unit = #{productUnit}</if>
+            <if test="riseDate != null ">and rise_date = #{riseDate}</if>
+            <if test="checkDate != null ">and check_date = #{checkDate}</if>
+            <if test="riseFloor != null  and riseFloor != ''">and rise_floor = #{riseFloor}</if>
+            <if test="riseNumber != null ">and rise_number = #{riseNumber}</if>
+            <if test="generalUnit != null  and generalUnit != ''">and general_unit = #{generalUnit}</if>
+            <if test="projectMan != null  and projectMan != ''">and project_man = #{projectMan}</if>
+            <if test="underUnit != null  and underUnit != ''">and under_unit = #{underUnit}</if>
+            <if test="underUnitMan != null  and underUnitMan != ''">and under_unit_man = #{underUnitMan}</if>
+            <if test="checkConclusion != null ">and check_conclusion = #{checkConclusion}</if>
+            <if test="erectionManSign != null  and erectionManSign != ''">and erection_man_sign = #{erectionManSign}
+            </if>
+            <if test="monomerCheckSign != null  and monomerCheckSign != ''">and monomer_check_sign =
+                #{monomerCheckSign}
+            </if>
+            <if test="projectManagerSign != null  and projectManagerSign != ''">and project_manager_sign =
+                #{projectManagerSign}
+            </if>
+            <if test="projectSafeSign != null  and projectSafeSign != ''">and project_safe_sign = #{projectSafeSign}
+            </if>
+            <if test="productionSign != null  and productionSign != ''">and production_sign = #{productionSign}</if>
+            <if test="dictType != null  and dictType != ''">and dict_type = #{dictType}</if>
+            <if test="params.startTime != null and params.startTime != ''">
+                and date_format(check_date,'%y%m%d') &gt;= date_format(#{params.startTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                and date_format(check_date,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+        order by rise_date desc
+    </select>
+
+    <select id="selectRiseCheckById" parameterType="Long" resultMap="RiseCheckResult">
+        <include refid="selectRiseCheckVo"/>
+        where id = #{id} and del_flag = 0
+    </select>
+
+    <insert id="insertRiseCheck" parameterType="RiseCheck" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_rise_check
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="projectId != null">project_id,</if>
+            <if test="projectName != null">project_name,</if>
+            <if test="climbFrameId != null">climb_frame_id,</if>
+            <if test="monomer != null">monomer,</if>
+            <if test="climbFrameName != null">climb_frame_name,</if>
+            <if test="structure != null">structure,</if>
+            <if test="deviceName != null">device_name,</if>
+            <if test="model != null">model,</if>
+            <if test="productUnit != null">product_unit,</if>
+            <if test="riseDate != null">rise_date,</if>
+            <if test="checkDate != null">check_date,</if>
+            <if test="riseFloor != null">rise_floor,</if>
+            <if test="riseNumber != null">rise_number,</if>
+            <if test="generalUnit != null">general_unit,</if>
+            <if test="projectMan != null">project_man,</if>
+            <if test="underUnit != null">under_unit,</if>
+            <if test="underUnitMan != null">under_unit_man,</if>
+            <if test="checkConclusion != null">check_conclusion,</if>
+            <if test="erectionManSign != null">erection_man_sign,</if>
+            <if test="monomerCheckSign != null">monomer_check_sign,</if>
+            <if test="projectManagerSign != null">project_manager_sign,</if>
+            <if test="projectSafeSign != null">project_safe_sign,</if>
+            <if test="productionSign != null">production_sign,</if>
+            <if test="dictType != null">dict_type,</if>
+            <if test="lon != null">lon,</if>
+            <if test="lat != null">lat,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="projectId != null">#{projectId},</if>
+            <if test="projectName != null">#{projectName},</if>
+            <if test="climbFrameId != null">#{climbFrameId},</if>
+            <if test="monomer != null">#{monomer},</if>
+            <if test="climbFrameName != null">#{climbFrameName},</if>
+            <if test="structure != null">#{structure},</if>
+            <if test="deviceName != null">#{deviceName},</if>
+            <if test="model != null">#{model},</if>
+            <if test="productUnit != null">#{productUnit},</if>
+            <if test="riseDate != null">#{riseDate},</if>
+            <if test="checkDate != null">#{checkDate},</if>
+            <if test="riseFloor != null">#{riseFloor},</if>
+            <if test="riseNumber != null">#{riseNumber},</if>
+            <if test="generalUnit != null">#{generalUnit},</if>
+            <if test="projectMan != null">#{projectMan},</if>
+            <if test="underUnit != null">#{underUnit},</if>
+            <if test="underUnitMan != null">#{underUnitMan},</if>
+            <if test="checkConclusion != null">#{checkConclusion},</if>
+            <if test="erectionManSign != null">#{erectionManSign},</if>
+            <if test="monomerCheckSign != null">#{monomerCheckSign},</if>
+            <if test="projectManagerSign != null">#{projectManagerSign},</if>
+            <if test="projectSafeSign != null">#{projectSafeSign},</if>
+            <if test="productionSign != null">#{productionSign},</if>
+            <if test="dictType != null">#{dictType},</if>
+            <if test="lon != null">#{lon},</if>
+            <if test="lat != null">#{lat},</if>
+        </trim>
+    </insert>
+
+    <update id="updateRiseCheck" parameterType="RiseCheck">
+        update tab_rise_check
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="projectName != null">project_name = #{projectName},</if>
+            <if test="climbFrameId != null">climb_frame_id = #{climbFrameId},</if>
+            <if test="monomer != null">monomer = #{monomer},</if>
+            <if test="climbFrameName != null">climb_frame_name = #{climbFrameName},</if>
+            <if test="structure != null">structure = #{structure},</if>
+            <if test="deviceName != null">device_name = #{deviceName},</if>
+            <if test="model != null">model = #{model},</if>
+            <if test="productUnit != null">product_unit = #{productUnit},</if>
+            <if test="riseDate != null">rise_date = #{riseDate},</if>
+            <if test="checkDate != null">check_date = #{checkDate},</if>
+            <if test="riseFloor != null">rise_floor = #{riseFloor},</if>
+            <if test="riseNumber != null">rise_number = #{riseNumber},</if>
+            <if test="generalUnit != null">general_unit = #{generalUnit},</if>
+            <if test="projectMan != null">project_man = #{projectMan},</if>
+            <if test="underUnit != null">under_unit = #{underUnit},</if>
+            <if test="underUnitMan != null">under_unit_man = #{underUnitMan},</if>
+            <if test="checkConclusion != null">check_conclusion = #{checkConclusion},</if>
+            <if test="erectionManSign != null">erection_man_sign = #{erectionManSign},</if>
+            <if test="monomerCheckSign != null">monomer_check_sign = #{monomerCheckSign},</if>
+            <if test="projectManagerSign != null">project_manager_sign = #{projectManagerSign},</if>
+            <if test="projectSafeSign != null">project_safe_sign = #{projectSafeSign},</if>
+            <if test="productionSign != null">production_sign = #{productionSign},</if>
+            <if test="dictType != null">dict_type = #{dictType},</if>
+            <if test="lon != null">lon = #{lon},</if>
+            <if test="lon != null">lon = #{lon},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRiseCheckById" parameterType="Long">
+        delete
+        from tab_rise_check
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteRiseCheckByIds" parameterType="String">
+        delete from tab_rise_check where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--技术人员 - 升降脚手架提升作业前检查分页查询-->
+    <select id="getRiseCheckPage" resultType="com.zkjd.business.domain.RiseCheck">
+        select * from tab_rise_check
+        where del_flag = 0 and climb_frame_id = #{climbFrameId}
+        order by create_time desc limit #{page}, #{pageSize}
+    </select>
+
+    <select id="getRiseCheckByClimbId" resultType="com.zkjd.business.domain.RiseCheck">
+        select *
+        from tab_rise_check
+        where del_flag = 0
+          and climb_frame_id = #{climbFrameId}
+        order by create_time desc
+    </select>
+
+    <select id="getRiseCheckNumber" parameterType="com.zkjd.business.qo.StatisticsQO" resultType="integer">
+        select count(1)
+        from tab_rise_check
+        where climb_frame_id = #{climbFrameId}
+          and check_conclusion = 1
+          and date_format(check_date, '%Y-%m-%d') between #{startTime} and #{endTime}
+    </select>
+
+</mapper>

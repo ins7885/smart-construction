@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.DeviceMapper">
+
+    <resultMap type="Device" id="DeviceResult">
+        <result property="deviceId" column="device_id"/>
+        <result property="deviceName" column="device_name"/>
+        <result property="deviceTypeId" column="device_type_id"/>
+        <result property="deviceNo" column="device_no"/>
+        <result property="remark" column="remark"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="climbFrameId" column="climb_frame_id"/>
+    </resultMap>
+
+    <sql id="selectDeviceVo">
+        select device_id, device_name, device_type_id, device_no, remark, del_flag, climb_frame_id
+        from tab_device
+    </sql>
+
+    <select id="selectDeviceList" parameterType="Device" resultMap="DeviceResult">
+        <include refid="selectDeviceVo"/>
+        <where>
+            <if test="deviceName != null  and deviceName != ''">and device_name like concat('%', #{deviceName}, '%')</if>
+            <if test="deviceTypeId != null  and deviceTypeId != ''">and device_type_id = #{deviceTypeId}</if>
+            <if test="deviceNo != null  and deviceNo != ''">and device_no = #{deviceNo}</if>
+            <if test="climbFrameId != null ">and climb_frame_id = #{climbFrameId}</if>
+        </where>
+    </select>
+
+    <select id="selectDeviceByDeviceId" parameterType="String" resultMap="DeviceResult">
+        <include refid="selectDeviceVo"/>
+        where device_id = #{deviceId}
+    </select>
+
+    <insert id="insertDevice" parameterType="Device">
+        insert into tab_device
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">device_id,</if>
+            <if test="deviceName != null">device_name,</if>
+            <if test="deviceTypeId != null">device_type_id,</if>
+            <if test="deviceNo != null">device_no,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="climbFrameId != null">climb_frame_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="deviceName != null">#{deviceName},</if>
+            <if test="deviceTypeId != null">#{deviceTypeId},</if>
+            <if test="deviceNo != null">#{deviceNo},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="climbFrameId != null">#{climbFrameId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDevice" parameterType="Device">
+        update tab_device
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deviceName != null">device_name = #{deviceName},</if>
+            <if test="deviceTypeId != null">device_type_id = #{deviceTypeId},</if>
+            <if test="deviceNo != null">device_no = #{deviceNo},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="climbFrameId != null">climb_frame_id = #{climbFrameId},</if>
+        </trim>
+        where device_id = #{deviceId}
+    </update>
+
+    <delete id="deleteDeviceByDeviceId" parameterType="String">
+        delete
+        from tab_device
+        where device_id = #{deviceId}
+    </delete>
+
+    <delete id="deleteDeviceByDeviceIds" parameterType="String">
+        delete from tab_device where device_id in
+        <foreach item="deviceId" collection="array" open="(" separator="," close=")">
+            #{deviceId}
+        </foreach>
+    </delete>
+
+    <!--最初是获取设备信息,后改为查找爬架信息-->
+    <select id="getOneDeviceByUser" resultType="com.zkjd.business.vo.AppDeviceVO">
+        SELECT
+            p.project_id,
+            p.project_name,
+            cf.climb_frame_id,
+            cf.climb_frame_name
+        FROM
+            tab_project p
+            LEFT JOIN tab_climb_frame cf ON cf.project_id = p.project_id
+        WHERE 1 = 1
+        <if test="userId != null">
+            and p.project_id = ( SELECT project_id FROM sys_user su WHERE su.user_id = #{userId} )
+        </if>
+        ORDER BY
+            p.create_time DESC
+    </select>
+
+    <select id="getWarnCont" resultType="java.lang.Integer">
+        --         SELECT
+--             COUNT( t.device_id )
+--         FROM
+--             (
+--             SELECT DISTINCT
+--                 td.device_id,
+--                 tw.warn_id
+--             FROM
+--                 tab_device td
+--                 LEFT JOIN tab_point tpo ON td.device_id = tpo.device_id
+--                 LEFT JOIN tab_warn tw ON tpo.point_id = tw.point_id
+--             ) t
+--         WHERE
+--             t.warn_id IS NOT NULL
+        SELECT COUNT(t.climb_frame_id)
+        FROM (
+                 SELECT DISTINCT tmp.climb_frame_id,
+                                 tw.warn_id
+                 FROM tab_climb_frame tcf
+                          LEFT JOIN tab_monitor_point tmp ON tcf.climb_frame_id = tmp.climb_frame_id
+                          LEFT JOIN tab_warn tw ON tmp.monitor_pid = tw.point_id
+             ) t
+        WHERE t.warn_id IS NOT NULL
+    </select>
+</mapper>

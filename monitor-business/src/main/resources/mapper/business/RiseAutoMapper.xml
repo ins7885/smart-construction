@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.RiseAutoMapper">
+
+    <resultMap type="RiseAuto" id="RiseAutoResult">
+        <result property="id" column="id"/>
+        <result property="climbFrameId" column="climb_frame_id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <sql id="selectRiseAutoVo">
+        select id,
+               climb_frame_id,
+               start_time,
+               end_time,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               del_flag
+        from tab_rise_auto
+    </sql>
+
+    <select id="selectRiseAutoList" parameterType="RiseAuto" resultMap="RiseAutoResult">
+        <include refid="selectRiseAutoVo"/>
+        <where>
+            <if test="climbFrameId != null ">and climb_frame_id = #{climbFrameId}</if>
+            <if test="startTime != null ">and start_time = #{startTime}</if>
+            <if test="endTime != null ">and end_time = #{endTime}</if>
+        </where>
+    </select>
+
+    <!-- 系统自动获取提升记录 -->
+    <select id="listByAuto" parameterType="RiseAuto" resultType="com.zkjd.business.vo.RiseAutoVO">
+        select ra.id,ra.climb_frame_id,ra.start_time,ra.end_time,cf.monomer,p.project_name
+        from tab_rise_auto ra
+        left join tab_climb_frame cf on ra.climb_frame_id = cf.climb_frame_id
+        left join tab_project p on p.project_id = cf.project_id
+        <where>
+            <if test="climbFrameId != null ">and ra.climb_frame_id = #{climbFrameId}</if>
+            <if test="params.startTime != null and params.startTime != ''">
+                and date_format(ra.start_time,'%y%m%d') &gt;= date_format(#{params.startTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                and date_format(ra.start_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectRiseAutoById" parameterType="Long" resultMap="RiseAutoResult">
+        <include refid="selectRiseAutoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertRiseAuto" parameterType="RiseAuto" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_rise_auto
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="climbFrameId != null">climb_frame_id,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="climbFrameId != null">#{climbFrameId},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateRiseAuto" parameterType="RiseAuto">
+        update tab_rise_auto
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="climbFrameId != null">climb_frame_id = #{climbFrameId},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRiseAutoById" parameterType="Long">
+        delete
+        from tab_rise_auto
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteRiseAutoByIds" parameterType="String">
+        delete from tab_rise_auto where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

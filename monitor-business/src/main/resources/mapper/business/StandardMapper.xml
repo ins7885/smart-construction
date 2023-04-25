@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.StandardMapper">
+    
+    <resultMap type="Standard" id="StandardResult">
+        <result property="standardId"    column="standard_id"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="content"    column="content"    />
+        <result property="fileFormat"    column="file_format"    />
+        <result property="fileSize"    column="file_size"    />
+        <result property="uploader"    column="uploader"    />
+        <result property="uploadTime"    column="upload_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="fileName"    column="file_name"    />
+        <result property="filePath"    column="file_path"    />
+    </resultMap>
+
+    <sql id="selectStandardVo">
+        select standard_id, name, type, content, file_format, file_size, uploader, upload_time, del_flag, create_by, create_time, update_by, update_time,file_name,file_path from tab_standard
+    </sql>
+
+    <select id="selectStandardList" parameterType="Standard" resultMap="StandardResult">
+        <include refid="selectStandardVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="fileFormat != null  and fileFormat != ''"> and file_format = #{fileFormat}</if>
+            <if test="uploader != null  and uploader != ''"> and uploader = #{uploader}</if>
+            <if test="uploadTime != null "> and date_format(upload_time,'%y%m%d') = date_format(#{uploadTime},'%y%m%d')</if>
+        </where>
+        ORDER BY upload_time DESC
+    </select>
+    
+    <select id="selectStandardByStandardId" parameterType="Long" resultMap="StandardResult">
+        <include refid="selectStandardVo"/>
+        where standard_id = #{standardId}
+    </select>
+        
+    <insert id="insertStandard" parameterType="Standard">
+        insert into tab_standard
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="standardId != null">standard_id,</if>
+            <if test="name != null">name,</if>
+            <if test="type != null">type,</if>
+            <if test="content != null">content,</if>
+            <if test="fileFormat != null">file_format,</if>
+            <if test="fileSize != null">file_size,</if>
+            <if test="uploader != null">uploader,</if>
+            <if test="uploadTime != null">upload_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="standardId != null">#{standardId},</if>
+            <if test="name != null">#{name},</if>
+            <if test="type != null">#{type},</if>
+            <if test="content != null">#{content},</if>
+            <if test="fileFormat != null">#{fileFormat},</if>
+            <if test="fileSize != null">#{fileSize},</if>
+            <if test="uploader != null">#{uploader},</if>
+            <if test="uploadTime != null">#{uploadTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStandard" parameterType="Standard">
+        update tab_standard
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="fileFormat != null">file_format = #{fileFormat},</if>
+            <if test="fileSize != null">file_size = #{fileSize},</if>
+            <if test="uploader != null">uploader = #{uploader},</if>
+            <if test="uploadTime != null">upload_time = #{uploadTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+        </trim>
+        where standard_id = #{standardId}
+    </update>
+
+    <delete id="deleteStandardByStandardId" parameterType="Long">
+        delete from tab_standard where standard_id = #{standardId}
+    </delete>
+
+    <delete id="deleteStandardByStandardIds" parameterType="String">
+        delete from tab_standard where standard_id in 
+        <foreach item="standardId" collection="array" open="(" separator="," close=")">
+            #{standardId}
+        </foreach>
+    </delete>
+
+    <select id="getStandardlist" resultType="com.zkjd.business.domain.Standard">
+        select s.standard_id, s.name,create_time,(
+                   SELECT `sys_dict_data`.`dict_label`
+                   FROM `sys_dict_data`
+                   WHERE (`sys_dict_data`.`dict_value` = `s`.`type`))  AS `type`  from tab_standard s
+        order by s.create_time desc limit #{page}, #{pageSize}
+    </select>
+
+</mapper>

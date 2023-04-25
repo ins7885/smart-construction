@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.CraneMapper">
+
+    <resultMap type="Crane" id="CraneResult">
+        <result property="craneId" column="crane_id"/>
+        <result property="craneName" column="crane_name"/>
+        <result property="climbFrameId" column="climb_frame_id"/>
+        <result property="code" column="code"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="climbFrameName" column="climb_frame_name"/>
+        <result property="projectName" column="project_name"/>
+        <result property="direction" column="direction"/>
+        <result property="projectId" column="project_id"/>
+    </resultMap>
+
+    <sql id="selectCraneVo">
+        SELECT
+            tc.crane_id,
+            tc.crane_name,
+            tc.climb_frame_id,
+            tc.climb_frame_name,
+            tc.CODE,
+            tc.del_flag,
+            tc.create_by,
+            tc.create_time,
+            tc.update_by,
+            tc.update_time,
+            tc.remark,
+            tc.direction,
+            tc.project_id,
+            ( SELECT tp.project_name FROM tab_project tp WHERE tp.project_id = tc.project_id ) project_name,
+            ( SELECT sdd.dict_label FROM sys_dict_data sdd WHERE sdd.dict_value = tc.direction ) direction_name
+        FROM
+            tab_crane tc
+    </sql>
+
+    <select id="selectCraneList" parameterType="Crane" resultMap="CraneResult">
+        <include refid="selectCraneVo"/>
+        <where>
+            <if test="projectId != null ">and project_id = #{projectId}</if>
+            <if test="climbFrameId != null ">and climb_frame_id = #{climbFrameId}</if>
+            <!--<if test="climbFrameName != null and climbFrameName != '' "> and climb_frame_name like concat('%', #{climbFrameName}, '%')</if>-->
+            <if test="craneName != null  and craneName != ''">and crane_name like concat('%', #{craneName}, '%')</if>
+            <if test="direction != null and direction != '' ">and direction like concat('%', #{direction}, '%')</if>
+            <if test="code != null  and code != ''">and code = #{code}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectCraneByCraneId" parameterType="Long" resultMap="CraneResult">
+        <include refid="selectCraneVo"/>
+        where crane_id = #{craneId}
+    </select>
+
+    <insert id="insertCrane" parameterType="Crane">
+        insert into tab_crane
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="craneId != null">crane_id,</if>
+            <if test="craneName != null">crane_name,</if>
+            <if test="climbFrameId != null">climb_frame_id,</if>
+            <if test="climbFrameName != null">climb_frame_name,</if>
+            <if test="direction != null">direction,</if>
+            <if test="code != null">code,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="projectId != null">project_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="craneId != null">#{craneId},</if>
+            <if test="craneName != null">#{craneName},</if>
+            <if test="climbFrameId != null">#{climbFrameId},</if>
+            <if test="climbFrameName != null">#{climbFrameName},</if>
+            <if test="direction != null">#{direction},</if>
+            <if test="code != null">#{code},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="projectId != null">#{projectId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCrane" parameterType="Crane">
+        update tab_crane
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="craneName != null">crane_name = #{craneName},</if>
+            <if test="climbFrameId != null">climb_frame_id = #{climbFrameId},</if>
+            <if test="climbFrameName != null">climb_frame_name = #{climbFrameName},</if>
+            <if test="direction != null">direction = #{direction},</if>
+            <if test="code != null">code = #{code},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="projectId != null">project_id = #{projectId},</if>
+        </trim>
+        where crane_id = #{craneId}
+    </update>
+
+    <delete id="deleteCraneByCraneId" parameterType="Long">
+        delete
+        from tab_crane
+        where crane_id = #{craneId}
+    </delete>
+
+    <delete id="deleteCraneByCraneIds" parameterType="Long">
+        delete from tab_crane where crane_id in
+        <foreach item="craneId" collection="array" open="(" separator="," close=")">
+            #{craneId}
+        </foreach>
+    </delete>
+
+    <select id="getCranesByclimbFrameId" parameterType="Long" resultMap="CraneResult">
+        <include refid="selectCraneVo"/>
+        where climb_frame_id = #{climbFrameId}
+    </select>
+
+    <!--PC端_统计分析_自动获取提升记录_提升回放_荷载数据-->
+    <select id="getRecordDataByCraneId" resultType="com.zkjd.business.vo.CraneVO">
+        select rn.record_time time,
+            rn.record_value,
+            mp.type,
+            mp.point_name
+        from tab_crane c
+            left join tab_monitor_point mp
+        on c.crane_id = mp.crane_id
+            left join tab_record rn on rn.point_id = mp.monitor_pid
+        where c.del_flag = 0
+          and mp.del_flag = 0 and mp.type = 'monitor_point_type_03'
+          and c.climb_frame_id = #{climbFrameId}
+          and rn.record_time >= #{startTime} and rn.record_time <![CDATA[<=]]> #{endTime}
+        order by rn.record_time
+    </select>
+
+    <!--app端根据爬架ID获取电葫芦信息列表-->
+    <select id="getRecordNewByCraneId" parameterType="Long" resultType="com.zkjd.business.vo.CraneVO">
+        select c.climb_frame_id,
+               c.climb_frame_name,
+               c.crane_id,
+               c.crane_name,
+               c.status,
+               mp.monitor_pid,
+               mp.type,
+               mp.max_value,
+               mp.min_value,
+               rn.record_time,
+               rn.record_value
+        from tab_crane c
+                 left join tab_monitor_point mp on c.crane_id = mp.crane_id
+                 left join tab_record_new rn on rn.point_id = mp.monitor_pid
+        where c.del_flag = 0
+          and mp.del_flag = 0
+          and c.climb_frame_id = #{climbFrameId}
+    </select>
+
+    <!--app端根据爬架ID获取电葫芦信息列表-->
+    <select id="getPointsByClimbFrameId" parameterType="Long" resultType="com.zkjd.business.vo.CraneVO">
+        SELECT c.climb_frame_id,
+               c.climb_frame_name,
+               c.crane_id,
+               c.crane_name,
+               c.direction,
+               c.status,
+               mp.monitor_pid,
+               mp.point_name,
+               rn.record_time,
+               (
+                   SELECT `sys_dict_data`.`dict_label`
+                   FROM `sys_dict_data`
+                   WHERE (`sys_dict_data`.`dict_value` = `mp`.`type`))  AS `type`,
+               mp.max_value,
+               mp.min_value,
+               concat(
+                       CONVERT(format(((`rn`.`record_value` + 0) - ifnull(`mp`.`init_value`, 0)), 2) USING utf8), (
+                   SELECT `sys_dict_data`.`remark`
+                   FROM `sys_dict_data`
+                   WHERE (`sys_dict_data`.`dict_value` = `mp`.`type`))) AS `record_value`
+        FROM tab_crane c
+                 LEFT JOIN tab_monitor_point mp ON c.crane_id = mp.crane_id
+                 LEFT JOIN tab_record_new rn ON rn.point_id = mp.monitor_pid
+        WHERE c.del_flag = 0
+          and mp.del_flag = 0
+          and c.climb_frame_id = #{climbFrameId}
+        order by rn.record_time desc
+    </select>
+
+    <!--获取监测点信息-->
+    <select id="getPointInfo" resultType="com.zkjd.business.vo.CraneVO">
+        SELECT c.climb_frame_id,
+               c.climb_frame_name,
+               c.crane_id,
+               c.crane_name,
+               c.direction,
+               mp.monitor_pid,
+               mp.point_name,
+               (
+                   SELECT `sys_dict_data`.`dict_label`
+                   FROM `sys_dict_data`
+                   WHERE (`sys_dict_data`.`dict_value` = `mp`.`type`))  AS `type`,
+               mp.max_value,
+               mp.min_value,
+               rn.record_time,
+               concat(
+                       CONVERT(format(((`rn`.`record_value` + 0) - ifnull(`mp`.`init_value`, 0)), 2) USING utf8), (
+                   SELECT `sys_dict_data`.`remark`
+                   FROM `sys_dict_data`
+                   WHERE (`sys_dict_data`.`dict_value` = `mp`.`type`))) AS `record_value`
+        FROM tab_crane c
+                 LEFT JOIN tab_monitor_point mp ON c.crane_id = mp.crane_id
+                 LEFT JOIN tab_record_new rn ON rn.point_id = mp.monitor_pid
+        WHERE c.del_flag = 0
+          and mp.del_flag = 0
+          and c.climb_frame_id = #{climbFrameId}
+          and mp.monitor_pid = #{monitorPid}
+        order by rn.record_time desc
+    </select>
+
+    <select id="getCountByCraneIds" resultType="integer">
+        SELECT COUNT(monitor_pid) FROM tab_monitor_point WHERE crane_id
+        IN
+        <foreach collection="list" item="item"
+                 separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

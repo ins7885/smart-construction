@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.MonomerMapper">
+
+    <insert id="batchMonomer">
+        insert into tab_monomer(monomer, del_flag, create_by, create_time, update_by, update_time, remark,project_id,start_date,finished_date,rate) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.monomer},#{item.delFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime},#{item.remark},#{item.projectId},#{item.startDate},#{item.finishedDate},#{item.rate})
+        </foreach>
+    </insert>
+
+    <select id="getListByProjectId" resultType="com.zkjd.business.domain.Monomer">
+        SELECT
+            monomer_id,
+            monomer,
+            del_flag,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            project_id,
+            start_date,
+            finished_date,
+            rate
+        FROM
+            tab_monomer
+        where project_id = #{projectId} ORDER BY monomer
+    </select>
+
+    <update id="updateBatch">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update tab_monomer
+            <set>
+                <if test="item.monomer != null">
+                    monomer = #{item.monomer},
+                </if>
+                <if test="item.remark != null">
+                    remark = #{item.remark},
+                </if>
+                <if test="item.startDate != null">
+                    start_date = #{item.startDate},
+                </if>
+                <if test="item.finishedDate != null">
+                    finished_date = #{item.finishedDate},
+                </if>
+                <if test="item.rate != null">
+                    rate = #{item.rate},
+                </if>
+                update_time = NOW()
+            </set>
+            where monomer_id = #{item.monomerId}
+        </foreach>
+    </update>
+
+    <delete id="deleteMonomer" parameterType="Long">
+        delete from tab_monomer where project_id = #{projectId}
+    </delete>
+
+    <delete id="deleteBatch" parameterType="Long">
+        delete from tab_monomer where project_id in
+        <foreach item="item" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteBatchByIds" parameterType="java.util.List">
+        delete from tab_monomer where monomer_id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.AcceptRecordMapper">
+
+    <resultMap type="AcceptRecord" id="AcceptRecordResult">
+        <result property="id" column="id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="projectName" column="project_name"/>
+        <result property="workTeam" column="work_team"/>
+        <result property="installPosition" column="install_position"/>
+        <result property="loadCapacity" column="load_capacity"/>
+        <result property="conclusion" column="conclusion"/>
+        <result property="acceptTime" column="accept_time"/>
+        <result property="dictType" column="dict_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="installTeamSign" column="install_team_sign"/>
+        <result property="useTeamSign" column="use_team_sign"/>
+        <result property="dutyManSign" column="duty_man_sign"/>
+        <result property="safeTeamSign" column="safe_team_sign"/>
+        <result property="technologyManSign" column="technology_man_sign"/>
+    </resultMap>
+
+    <sql id="selectAcceptRecordVo">
+        select id, project_id, project_name, work_team, install_position, load_capacity, conclusion, accept_time, dict_type, create_time, create_by, update_time, update_by, del_flag, install_team_sign, use_team_sign, duty_man_sign, safe_team_sign, technology_man_sign from tab_accept_record
+    </sql>
+
+    <select id="selectAcceptRecordList" parameterType="AcceptRecord" resultMap="AcceptRecordResult">
+        <include refid="selectAcceptRecordVo"/>
+        <where>
+            del_flag = 0
+            <if test="projectId != null ">and project_id = #{projectId}</if>
+            <if test="projectName != null  and projectName != ''">and project_name like concat('%', #{projectName},
+                '%')
+            </if>
+            <if test="workTeam != null  and workTeam != ''">and work_team = #{workTeam}</if>
+            <if test="installPosition != null  and installPosition != ''">and install_position = #{installPosition}</if>
+            <if test="loadCapacity != null  and loadCapacity != ''">and load_capacity = #{loadCapacity}</if>
+            <if test="conclusion != null  and conclusion != ''">and conclusion = #{conclusion}</if>
+            <if test="acceptTime != null ">and accept_time = #{acceptTime}</if>
+            <if test="dictType != null  and dictType != ''">and dict_type = #{dictType}</if>
+            <if test="installTeamSign != null  and installTeamSign != ''">and install_team_sign = #{installTeamSign}
+            </if>
+            <if test="useTeamSign != null  and useTeamSign != ''">and use_team_sign = #{useTeamSign}</if>
+            <if test="dutyManSign != null  and dutyManSign != ''">and duty_man_sign = #{dutyManSign}</if>
+            <if test="safeTeamSign != null  and safeTeamSign != ''">and safe_team_sign = #{safeTeamSign}</if>
+            <if test="technologyManSign != null  and technologyManSign != ''">and technology_man_sign =
+                #{technologyManSign}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectAcceptRecordById" parameterType="Long" resultMap="AcceptRecordResult">
+        <include refid="selectAcceptRecordVo"/>
+        where id = #{id} and del_flag = 0
+    </select>
+
+    <insert id="insertAcceptRecord" parameterType="AcceptRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_accept_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">project_id,</if>
+            <if test="projectName != null">project_name,</if>
+            <if test="workTeam != null">work_team,</if>
+            <if test="installPosition != null">install_position,</if>
+            <if test="loadCapacity != null">load_capacity,</if>
+            <if test="conclusion != null">conclusion,</if>
+            <if test="acceptTime != null">accept_time,</if>
+            <if test="dictType != null">dict_type,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="installTeamSign != null">install_team_sign,</if>
+            <if test="useTeamSign != null">use_team_sign,</if>
+            <if test="dutyManSign != null">duty_man_sign,</if>
+            <if test="safeTeamSign != null">safe_team_sign,</if>
+            <if test="technologyManSign != null">technology_man_sign,</if>
+            <if test="lon != null">lon,</if>
+            <if test="lat != null">lat,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">#{projectId},</if>
+            <if test="projectName != null">#{projectName},</if>
+            <if test="workTeam != null">#{workTeam},</if>
+            <if test="installPosition != null">#{installPosition},</if>
+            <if test="loadCapacity != null">#{loadCapacity},</if>
+            <if test="conclusion != null">#{conclusion},</if>
+            <if test="acceptTime != null">#{acceptTime},</if>
+            <if test="dictType != null">#{dictType},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="installTeamSign != null">#{installTeamSign},</if>
+            <if test="useTeamSign != null">#{useTeamSign},</if>
+            <if test="dutyManSign != null">#{dutyManSign},</if>
+            <if test="safeTeamSign != null">#{safeTeamSign},</if>
+            <if test="technologyManSign != null">#{technologyManSign},</if>
+            <if test="lon != null">#{lon},</if>
+            <if test="lat != null">#{lat},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAcceptRecord" parameterType="AcceptRecord">
+        update tab_accept_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="projectName != null">project_name = #{projectName},</if>
+            <if test="workTeam != null">work_team = #{workTeam},</if>
+            <if test="installPosition != null">install_position = #{installPosition},</if>
+            <if test="loadCapacity != null">load_capacity = #{loadCapacity},</if>
+            <if test="conclusion != null">conclusion = #{conclusion},</if>
+            <if test="acceptTime != null">accept_time = #{acceptTime},</if>
+            <if test="dictType != null">dict_type = #{dictType},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="installTeamSign != null">install_team_sign = #{installTeamSign},</if>
+            <if test="useTeamSign != null">use_team_sign = #{useTeamSign},</if>
+            <if test="dutyManSign != null">duty_man_sign = #{dutyManSign},</if>
+            <if test="safeTeamSign != null">safe_team_sign = #{safeTeamSign},</if>
+            <if test="technologyManSign != null">technology_man_sign = #{technologyManSign},</if>
+            <if test="lon != null">lon = #{lon},</if>
+            <if test="lon != null">lon = #{lon},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAcceptRecordById" parameterType="Long">
+        delete from tab_accept_record where id = #{id}
+    </delete>
+
+    <delete id="deleteAcceptRecordByIds" parameterType="String">
+        delete from tab_accept_record where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--技术人员 - 爬架卸料平台验收记录分页查询-->
+    <select id="getAcceptRecordPage" resultType="com.zkjd.business.domain.AcceptRecord">
+        select * from tab_accept_record
+        where del_flag = 0 and project_id = #{projectId}
+        order by accept_time desc limit #{page},#{pageSize}
+    </select>
+</mapper>

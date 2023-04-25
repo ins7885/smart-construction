@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.RiseCheckSubMapper">
+
+    <resultMap type="RiseCheckSub" id="RiseCheckSubResult">
+        <result property="id" column="id"/>
+        <result property="dictType" column="dict_type"/>
+        <result property="dictValue" column="dict_value"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="riseCheckId" column="rise_check_id"/>
+        <result property="checkValue" column="check_value"/>
+    </resultMap>
+
+    <sql id="selectRiseCheckSubVo">
+        select id, dict_type, dict_value, create_by, create_time, update_by, update_time, del_flag, rise_check_id, check_value from tab_rise_check_sub
+    </sql>
+
+    <select id="selectRiseCheckSubList" parameterType="RiseCheckSub" resultMap="RiseCheckSubResult">
+        <include refid="selectRiseCheckSubVo"/>
+        <where>
+            <if test="dictType != null  and dictType != ''">and dict_type = #{dictType}</if>
+            <if test="dictValue != null  and dictValue != ''">and dict_value = #{dictValue}</if>
+            <if test="riseCheckId != null ">and rise_check_id = #{riseCheckId}</if>
+            <if test="checkValue != null ">and check_value = #{checkValue}</if>
+        </where>
+    </select>
+
+    <select id="selectRiseCheckSubById" parameterType="Long" resultMap="RiseCheckSubResult">
+        <include refid="selectRiseCheckSubVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertRiseCheckSub" parameterType="RiseCheckSub" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_rise_check_sub
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="dictType != null">dict_type,</if>
+            <if test="dictValue != null">dict_value,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="riseCheckId != null">rise_check_id,</if>
+            <if test="checkValue != null">check_value,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="dictType != null">#{dictType},</if>
+            <if test="dictValue != null">#{dictValue},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="riseCheckId != null">#{riseCheckId},</if>
+            <if test="checkValue != null">#{checkValue},</if>
+        </trim>
+    </insert>
+
+    <update id="updateRiseCheckSub" parameterType="RiseCheckSub">
+        update tab_rise_check_sub
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="dictType != null">dict_type = #{dictType},</if>
+            <if test="dictValue != null">dict_value = #{dictValue},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="riseCheckId != null">rise_check_id = #{riseCheckId},</if>
+            <if test="checkValue != null">check_value = #{checkValue},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRiseCheckSubById" parameterType="Long">
+        delete from tab_rise_check_sub where id = #{id}
+    </delete>
+
+    <delete id="deleteRiseCheckSubByIds" parameterType="String">
+        delete from tab_rise_check_sub where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

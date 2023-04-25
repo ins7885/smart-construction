@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.OperateRecordMapper">
+    
+    <resultMap type="OperateRecord" id="OperateRecordResult">
+        <result property="operateId"    column="operate_id"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="projectName"    column="project_name"    />
+        <result property="climbFrameName"    column="climb_frame_name"    />
+        <result property="operator"    column="operator"    />
+        <result property="operateTime"    column="operate_time"    />
+        <result property="masterControlNum"    column="master_control_num"    />
+    </resultMap>
+
+    <sql id="selectOperateRecordVo">
+        select operate_id, del_flag, create_by, create_time, update_by, update_time, project_name, climb_frame_name, operator, operate_time, master_control_num from tab_operate_record
+    </sql>
+
+    <select id="selectOperateRecordList" parameterType="OperateRecord" resultMap="OperateRecordResult">
+        <include refid="selectOperateRecordVo"/>
+        <where>  
+            <if test="projectName != null  and projectName != ''"> and project_name like concat('%', #{projectName}, '%')</if>
+            <if test="climbFrameName != null  and climbFrameName != ''"> and climb_frame_name like concat('%', #{climbFrameName}, '%')</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(operate_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(operate_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+</mapper>

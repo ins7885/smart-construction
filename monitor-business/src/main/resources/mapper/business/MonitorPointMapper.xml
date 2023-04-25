@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.MonitorPointMapper">
+    
+    <resultMap type="MonitorPoint" id="MonitorPointResult">
+        <result property="monitorPid"    column="monitor_pid"    />
+        <result property="type"    column="type"    />
+        <result property="masterControl"    column="master_control"    />
+        <result property="subControl"    column="sub_control"    />
+        <result property="climbFrameId"    column="climb_frame_id"    />
+        <result property="climbFrameName"    column="climb_frame_name"    />
+        <result property="craneId"    column="crane_id"    />
+        <result property="craneName"    column="crane_name"    />
+        <result property="projectId"    column="project_id"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="pointName"    column="point_name"    />
+        <result property="maxValue"    column="max_value"    />
+        <result property="minValue"    column="min_value"    />
+        <result property="initValue"    column="init_value"    />
+        <result property="videoUrl"    column="video_url"    />
+        <result property="projectName" column="project_name"/>
+        <result property="typeName" column="type_name"/>
+        <result property="nameSpace" column="name_space"/>
+        <result property="deviceId" column="device_id"/>
+    </resultMap>
+
+    <sql id="selectMonitorPointVo">
+        SELECT
+            monitor_pid,
+            type,
+             ( SELECT sdd.dict_label FROM sys_dict_data sdd WHERE sdd.dict_value = tmp.type ) type_name,
+            master_control,
+            sub_control,
+            climb_frame_id,
+            climb_frame_name,
+            del_flag,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            crane_id,
+            crane_name,
+            project_id,
+            ( SELECT tp.project_name FROM tab_project tp WHERE tp.project_id = tmp.project_id ) project_name,
+            point_name,
+            max_value,
+            min_value,
+            init_value,
+            video_url,
+            name_space,
+            device_id
+        FROM
+            tab_monitor_point tmp
+--         select monitor_pid, type, master_control, sub_control, climb_frame_id, climb_frame_name,del_flag, create_by, create_time, update_by, update_time, crane_id, crane_name,project_id,point_name,max_value,min_value,init_value,video_url from tab_monitor_point
+    </sql>
+
+    <select id="selectMonitorPointList" parameterType="MonitorPoint" resultMap="MonitorPointResult">
+        <include refid="selectMonitorPointVo"/>
+        <where>
+            <if test="projectId != null"> and project_id = #{projectId}</if>
+            <if test="climbFrameId != null"> and climb_frame_id = #{climbFrameId}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="masterControl != null  and masterControl != ''"> and master_control like concat('%', #{masterControl}, '%')</if>
+            <if test="subControl != null  and subControl != ''"> and sub_control like concat('%', #{subControl}, '%')</if>
+            <!--<if test="climbFrameName != null  and climbFrameName != ''"> and climb_frame_name like concat('%', #{climbFrameName}, '%')</if>-->
+            <!--<if test="craneName != null  and craneName != ''"> and crane_name like concat('%', #{craneName}, '%')</if>-->
+            <if test="craneId != null"> and crane_id = #{craneId}</if>
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="selectMonitorPointById" parameterType="Long" resultMap="MonitorPointResult">
+        <include refid="selectMonitorPointVo"/>
+        where monitor_pid = #{monitorPid}
+    </select>
+        
+    <insert id="insertMonitorPoint" parameterType="MonitorPoint">
+        insert into tab_monitor_point
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="monitorPid != null">monitor_pid,</if>
+            <if test="type != null">type,</if>
+            <if test="masterControl != null">master_control,</if>
+            <if test="subControl != null">sub_control,</if>
+            <if test="climbFrameId != null">climb_frame_id,</if>
+            <if test="climbFrameName != null">climb_frame_name,</if>
+            <if test="craneId != null">crane_id,</if>
+            <if test="craneName != null">crane_name,</if>
+            <if test="projectId != null">project_id,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="pointName != null">point_name,</if>
+            <if test="maxValue != null">max_value,</if>
+            <if test="minValue != null">min_value,</if>
+            <if test="initValue != null">init_value,</if>
+            <if test="videoUrl != null">video_url,</if>
+            <if test="nameSpace != null">name_space,</if>
+            <if test="deviceId != null">device_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="monitorPid != null">#{monitorPid},</if>
+            <if test="type != null">#{type},</if>
+            <if test="masterControl != null">#{masterControl},</if>
+            <if test="subControl != null">#{subControl},</if>
+            <if test="climbFrameId != null">#{climbFrameId},</if>
+            <if test="climbFrameName != null">#{climbFrameName},</if>
+            <if test="craneId != null">#{craneId},</if>
+            <if test="craneName != null">#{craneName},</if>
+            <if test="projectId != null">#{projectId},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="pointName != null">#{pointName},</if>
+            <if test="maxValue != null">#{maxValue},</if>
+            <if test="minValue != null">#{minValue},</if>
+            <if test="initValue != null">#{initValue},</if>
+            <if test="videoUrl != null">#{videoUrl},</if>
+            <if test="nameSpace != null">#{nameSpace},</if>
+            <if test="deviceId != null">#{deviceId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMonitorPoint" parameterType="MonitorPoint">
+        update tab_monitor_point
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null">type = #{type},</if>
+            <if test="masterControl != null">master_control = #{masterControl},</if>
+            <if test="subControl != null">sub_control = #{subControl},</if>
+            <if test="climbFrameId != null">climb_frame_id = #{climbFrameId},</if>
+            <if test="climbFrameName != null">climb_frame_name = #{climbFrameName},</if>
+            <if test="craneId != null">crane_id = #{craneId},</if>
+            <if test="craneName != null">crane_name = #{craneName},</if>
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="pointName != null">point_name = #{pointName},</if>
+            <if test="maxValue != null">max_value = #{maxValue},</if>
+            <if test="minValue != null">min_value = #{minValue},</if>
+            <if test="initValue != null">init_value = #{initValue},</if>
+            <if test="videoUrl != null">video_url = #{videoUrl},</if>
+            <if test="nameSpace != null">name_space = #{nameSpace},</if>
+            <if test="deviceId != null">device_id = #{deviceId},</if>
+        </trim>
+        where monitor_pid = #{monitorPid}
+    </update>
+
+    <delete id="deleteMonitorPointById" parameterType="Long">
+        delete from tab_monitor_point where monitor_pid = #{monitorPid}
+    </delete>
+
+    <delete id="deleteMonitorPointByIds" parameterType="Long">
+        delete from tab_monitor_point where monitor_pid in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectMonitorPointChartById" parameterType="Long" resultType="com.zkjd.business.domain.Record">
+        SELECT
+            record_value,
+            date_format(record_time , '%Y-%m-%d %H:%i:%s') time
+        FROM
+            tab_record
+        WHERE
+            point_id = #{monitorPid}
+            AND record_time > DATE_SUB( NOW(), INTERVAL 12 HOUR )
+        ORDER BY
+            record_time
+    </select>
+
+    <select id="getMonitorPoints" resultMap="MonitorPointResult">
+        SELECT
+            tmp.project_id,
+            tmp.climb_frame_id,
+            tmp.monitor_pid,
+            ( SELECT project_name FROM tab_project tp WHERE tp.project_id = tmp.project_id ) project_name,
+            tmp.climb_frame_name,
+            tmp.point_name,
+            tmp.video_url,
+            tmp.name_space,
+            tmp.device_id
+        FROM
+            tab_monitor_point tmp
+        WHERE
+            tmp.type = 'monitor_point_type_10'
+    </select>
+</mapper>

@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.RiseRequestRecordMapper">
+
+    <resultMap type="com.zkjd.business.domain.RiseRequestInfo" id="RiseRequestInfo">
+        <result property="id" column="id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="climbFrameId" column="climb_frame_id"/>
+        <result property="riseTime" column="rise_time"/>
+        <result property="operateMan" column="operate_man"/>
+        <result property="riseFloor" column="rise_floor"/>
+        <result property="riseNumber" column="rise_number"/>
+        <result property="checkId" column="check_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="flag" column="flag"/>
+        <result property="monomer" column="monomer"/>
+        <result property="projectName" column="project_name"/>
+        <result property="riseType" column="rise_type"/>
+        <result property="currentProcess" column="current_process"/>
+        <result property="requestResult" column="request_result"/>
+        <result property="climbFrameName" column="climb_frame_name"/>
+
+    </resultMap>
+
+    <sql id="selectRiseRequestRecordVo">
+        select id,
+        project_id,
+        climb_frame_id,
+        rise_time,
+        operate_man,
+        rise_floor,
+        rise_number,
+        check_id,
+        create_time,
+        create_by,
+        update_time,
+        update_by,
+        flag,
+        monomer,
+        project_name,
+        rise_type,
+        current_process,
+        request_result,
+        climb_frame_name
+        from tab_rise_request_record
+    </sql>
+
+    <select id="selectRiseRecordList"
+            parameterType="com.zkjd.business.domain.RiseRecord"
+            resultMap="RiseRequestInfo">
+        <include refid="selectRiseRequestRecordVo"/>
+        <where>
+            <if test="projectId != null ">and project_id = #{projectId}</if>
+            <if test="climbFrameId != null ">and climb_frame_id = #{climbFrameId}</if>
+            <if test="riseTime != null ">and rise_time = #{riseTime}</if>
+            <if test="operateMan != null  and operateMan != ''">and operate_man = #{operateMan}</if>
+            <if test="riseFloor != null  and riseFloor != ''">and rise_floor = #{riseFloor}</if>
+            <if test="riseNumber != null ">and rise_number = #{riseNumber}</if>
+            <if test="checkId != null ">and check_id = #{checkId}</if>
+            <if test="flag != null ">and flag = #{flag}</if>
+            <if test="monomer != null  and monomer != ''">and monomer = #{monomer}</if>
+            <if test="projectName != null  and projectName != ''">and project_name like concat('%', #{projectName},
+                '%')
+            </if>
+            <if test="params.startTime != null and params.startTime != ''">
+                and date_format(rise_time,'%y%m%d') &gt;= date_format(#{params.startTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                and date_format(rise_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <update id="updateRiseRecord" parameterType="com.zkjd.business.domain.RiseRecord">
+        update tab_rise_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="climbFrameId != null">climb_frame_id = #{climbFrameId},</if>
+            <if test="riseTime != null">rise_time = #{riseTime},</if>
+            <if test="operateMan != null">operate_man = #{operateMan},</if>
+            <if test="riseFloor != null">rise_floor = #{riseFloor},</if>
+            <if test="riseNumber != null">rise_number = #{riseNumber},</if>
+            <if test="checkId != null">check_id = #{checkId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="flag != null">flag = #{flag},</if>
+            <if test="monomer != null">monomer = #{monomer},</if>
+            <if test="projectName != null">project_name = #{projectName},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRiseRecordById" parameterType="Long">
+        delete
+        from tab_rise_record
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteRiseRecordByIds" parameterType="String">
+        delete from tab_rise_record where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--技术人员提升记录分页查询-->
+    <select id="getRiseRecordList" resultType="com.zkjd.business.domain.RiseRecord">
+        select *
+        from tab_rise_record
+        where flag = 0 and climb_frame_id = #{climbFrameId}
+        order by rise_time desc limit #{page}, #{pageSize}
+    </select>
+
+    <select id="getRiseRecordTodayCount" resultType="integer">
+        SELECT COUNT(id)
+        FROM tab_rise_record
+        WHERE to_days(rise_time) = to_days(now())
+    </select>
+
+    <select id="getRiseNumberByTime" parameterType="com.zkjd.business.qo.StatisticsQO" resultType="integer">
+        <!--         select sum(rise_number) as number-->
+        <!--        from tab_rise_record-->
+        <!--        where climb_frame_id = #{climbFrameId}-->
+        <!--          and date_format(rise_time, '%Y-%m-%d') between #{startTime} and #{endTime}-->
+        select count(id) as number
+        from tab_rise_auto
+        where climb_frame_id = #{climbFrameId}
+        and date_format(start_time, '%Y-%m-%d') between #{startTime} and #{endTime}
+    </select>
+
+    <select id="getRiseNumberByDateRange" parameterType="com.zkjd.business.qo.StatisticsQO"
+            resultType="com.zkjd.business.vo.RiseDataVO">
+        <!--        select sum(rise_number) as number,mid(rise_time,1,10) as dateStr-->
+        <!--        from tab_rise_record-->
+        <!--        where climb_frame_id = #{climbFrameId}-->
+        <!--          and date_format(rise_time, '%Y-%m-%d') between #{startTime} and #{endTime} GROUP BY date_format(rise_time, '%Y-%m-%d')-->
+        select count(id) as number,mid(start_time,1,10) as dateStr
+        from tab_rise_auto
+        where climb_frame_id = #{climbFrameId}
+        and date_format(start_time, '%Y-%m-%d') between #{startTime} and #{endTime} GROUP BY date_format(start_time,
+        '%Y-%m-%d')
+    </select>
+    <select id="getRiseRequestRecordList" resultType="com.zkjd.business.domain.RiseRequestInfo">
+        select *
+        from tab_rise_request_record
+        where flag = 0 and climb_frame_id = #{climbFrameId}
+        order by rise_time desc limit #{page}, #{pageSize}
+    </select>
+
+    <insert id="insertRiseRequestRecord"
+            parameterType="com.zkjd.business.domain.RiseRequestInfo"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into tab_rise_request_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">project_id,</if>
+            <if test="climbFrameId != null">climb_frame_id,</if>
+            <if test="riseTime != null">rise_time,</if>
+            <if test="operateMan != null">operate_man,</if>
+            <if test="riseFloor != null">rise_floor,</if>
+            <if test="riseNumber != null">rise_number,</if>
+            <if test="checkId != null">check_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="flag != null">flag,</if>
+            <if test="monomer != null">monomer,</if>
+            <if test="projectName != null">project_name,</if>
+            <if test="climbFrameName != null">climb_frame_name,</if>
+            <if test="riseType != null">rise_type,</if>
+            <if test="currentProcess != null">current_process,</if>
+            <if test="requestResult != null">request_result,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">#{projectId},</if>
+            <if test="climbFrameId != null">#{climbFrameId},</if>
+            <if test="riseTime != null">#{riseTime},</if>
+            <if test="operateMan != null">#{operateMan},</if>
+            <if test="riseFloor != null">#{riseFloor},</if>
+            <if test="riseNumber != null">#{riseNumber},</if>
+            <if test="checkId != null">#{checkId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="flag != null">#{flag},</if>
+            <if test="monomer != null">#{monomer},</if>
+            <if test="projectName != null">#{projectName},</if>
+            <if test="climbFrameName != null">#{climbFrameName},</if>
+            <if test="riseType != null">#{riseType},</if>
+            <if test="currentProcess != null">#{currentProcess},</if>
+            <if test="requestResult != null">#{requestResult},</if>
+        </trim>
+    </insert>
+
+    <select id="getRiseRequestInfoById" parameterType="Long"
+            resultMap="RiseRequestInfo">
+        <include refid="selectRiseRequestRecordVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+        </where>
+    </select>
+
+    <update id="updateRiseRequestInfo" parameterType="com.zkjd.business.domain.RiseRequestInfo">
+        update tab_rise_request_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="flag != null">flag = #{flag},</if>
+            <if test="currentProcess != null">current_process = #{currentProcess},</if>
+            <if test="requestResult != null">request_result = #{requestResult},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateRiseRequestProcess" parameterType="com.zkjd.business.domain.RiseRequestProcess">
+        update tab_rise_request_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="currentProcess != null">current_process = #{currentProcess},</if>
+            <if test="requestResult != null">request_result = #{requestResult},</if>
+        </trim>
+        where id = #{riseRequestId}
+    </update>
+
+    <insert id="createProcess" parameterType="com.zkjd.business.domain.RiseRequestProcess">
+        insert into tab_rise_request_process
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="riseRequestId != null">rise_request_id,</if>
+            <if test="operateMan != null">operate_man,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="currentProcess != null">current_process,</if>
+            <if test="requestResult != null">request_result,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="riseRequestId != null">#{riseRequestId},</if>
+            <if test="operateMan != null">#{operateMan},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="currentProcess != null">#{currentProcess},</if>
+            <if test="requestResult != null">#{requestResult},</if>
+        </trim>
+    </insert>
+
+    <select id="getProcessInfoByRequestId" parameterType="Long"
+            resultMap="RiseRequestInfo">
+        select * from tab_rise_request_process
+        <where>
+            <if test="riseRequestId != null ">and id = #{id}</if>
+        </where>
+    </select>
+</mapper>

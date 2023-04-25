@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.MessageMapper">
+
+    <resultMap type="Message" id="MessageResult">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="publishTime" column="publish_time"/>
+        <result property="publishMan" column="publish_man"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="content" column="content"/>
+    </resultMap>
+
+    <sql id="selectMessageVo">
+        select id, title, create_time, create_by, update_time, update_by, publish_time, publish_man, del_flag, content from tab_message
+    </sql>
+
+    <select id="selectMessageList" parameterType="Message" resultMap="MessageResult">
+        <include refid="selectMessageVo"/>
+        <where> 1 = 1
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%') </if>
+            <if test="publishTime != null ">and date_format(publish_time,'%y%m%d') = date_format(#{publishTime},'%y%m%d')</if>
+            <if test="publishMan != null  and publishMan != ''">and publish_man like concat('%', #{publishMan}, '%')</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+        </where>
+        order by publish_time desc
+    </select>
+
+    <select id="selectMessageById" parameterType="Long" resultMap="MessageResult">
+        <include refid="selectMessageVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMessage" parameterType="Message" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null">title,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="publishTime != null">publish_time,</if>
+            <if test="publishMan != null">publish_man,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="content != null">content,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null">#{title},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="publishTime != null">#{publishTime},</if>
+            <if test="publishMan != null">#{publishMan},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="content != null">#{content},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMessage" parameterType="Message">
+        update tab_message
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title = #{title},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="publishMan != null">publish_man = #{publishMan},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="content != null">content = #{content},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMessageById" parameterType="Long">
+        delete from tab_message where id = #{id}
+    </delete>
+
+    <delete id="deleteMessageByIds" parameterType="String">
+        delete from tab_message where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--技术人员消息记录分页查询-->
+    <select id="getMessageList" resultType="com.zkjd.business.domain.Message">
+        select * from tab_message  order by publish_time desc limit #{page},#{pageSize}
+    </select>
+</mapper>

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.RecordMapper">
+
+    <resultMap type="Record" id="RecordResult">
+        <result property="projectName"    column="project_name"    />
+        <result property="climbFrameName"    column="climb_frame_name"    />
+        <result property="monomer"    column="monomer"    />
+        <result property="type"    column="type"    />
+        <result property="monitorPid"    column="monitor_pid"    />
+        <result property="pointName"    column="point_name"    />
+        <result property="recordValue"    column="record_value"    />
+        <result property="isWarn"    column="is_warn"    />
+        <result property="recordTime"    column="record_time"    />
+    </resultMap>
+
+    <!--<sql id="selectRecordVo">-->
+        <!--select project_name, climb_frame_name, monomer, type, monitor_pid, record_value, is_warn, record_time, point_name from v_record-->
+    <!--</sql>-->
+
+    <sql id="selectRecords">
+        SELECT
+            tp.project_name AS project_name,
+            tp.project_id AS project_id,
+            tcf.climb_frame_name AS climb_frame_name,
+            tcf.climb_frame_id AS climb_frame_id,
+            tcf.monomer AS monomer,
+            (
+            SELECT
+            sys_dict_data.dict_label
+            FROM
+            sys_dict_data
+            WHERE
+            ( sys_dict_data.dict_value = tmp.type )) AS type,
+            tmp.point_name AS point_name,
+            tmp.monitor_pid AS monitor_pid,
+            concat(
+            CONVERT ( format((( tr.record_value + 0 ) - ifnull( tmp.init_value, 0 )), 2 ) USING utf8 ),
+            (
+            SELECT
+            sys_dict_data.remark
+            FROM
+            sys_dict_data
+            WHERE
+            ( sys_dict_data.dict_value = tmp.type ))) AS record_value,
+            tmp.init_value AS init_value,
+            tmp.type AS point_type,
+            tr.is_warn AS is_warn,
+            tr.record_time AS record_time,
+            tr.record_id
+            FROM
+            tab_project tp
+            JOIN tab_climb_frame tcf ON tp.project_id = tcf.project_id
+            JOIN tab_monitor_point tmp ON tcf.climb_frame_id = tmp.climb_frame_id
+            JOIN ( SELECT is_warn, record_time, record_value, point_id,record_id FROM tab_record ORDER BY record_time DESC ) tr ON
+            tr.point_id = tmp.monitor_pid
+    </sql>
+
+    <select id="selectRecordList" parameterType="Record" resultMap="RecordResult">
+            SELECT
+                tp.project_name AS project_name,
+                tp.project_id AS project_id,
+                tcf.climb_frame_name AS climb_frame_name,
+                tcf.climb_frame_id AS climb_frame_id,
+                tcf.monomer AS monomer,
+                (
+                SELECT
+                sys_dict_data.dict_label
+                FROM
+                sys_dict_data
+                WHERE
+                ( sys_dict_data.dict_value = tmp.type )) AS type,
+                tmp.point_name AS point_name,
+                tmp.monitor_pid AS monitor_pid,
+                concat(
+                CONVERT ( format((( tr.record_value + 0 ) - ifnull( tmp.init_value, 0 )), 2 ) USING utf8 ),
+                (
+                SELECT
+                sys_dict_data.remark
+                FROM
+                sys_dict_data
+                WHERE
+                ( sys_dict_data.dict_value = tmp.type ))) AS record_value,
+                tmp.init_value AS init_value,
+                tmp.type AS point_type,
+                tr.is_warn AS is_warn,
+                tr.record_time AS record_time
+                FROM
+                tab_project tp
+                JOIN tab_climb_frame tcf ON tp.project_id = tcf.project_id
+                JOIN tab_monitor_point tmp ON tcf.climb_frame_id = tmp.climb_frame_id
+                JOIN ( SELECT is_warn, record_time, record_value, point_id FROM tab_record) tr ON tr.point_id = tmp.monitor_pid
+            <where>
+                <if test="projectId != null"> and tp.project_id = #{projectId}</if>
+                <if test="climbFrameId != null"> and tcf.climb_frame_id = #{climbFrameId}</if>
+                <if test="monomer != null  and monomer != ''"> and tcf.monomer = #{monomer}</if>
+                <if test="type != null  and type != ''"> and tmp.type = #{type}</if>
+                <if test="monitorPid != null "> and tmp.monitor_pid = #{monitorPid}</if>
+                <if test="pointName != null and pointName != ''"> and tmp.point_name like concat('%', #{pointName}, '%')</if>
+                <if test="recordValue != null  and recordValue != ''"> and tr.record_value = convert(#{recordValue}, decimal(10,2)) </if>
+                <if test="isWarn != null  and isWarn != ''"> and tr.is_warn = #{isWarn}</if>
+                <if test="recordTime != null "> and DATE_FORMAT(tr.record_time,'%Y-%m-%d') = DATE_FORMAT( #{recordTime} ,'%Y-%m-%d') </if>
+            </where>
+            ORDER BY tr.record_time DESC
+            LIMIT #{num}, #{size}
+    </select>
+
+    <select id="selectNoConditionRecord" parameterType="Record" resultMap="RecordResult">
+            SELECT
+                s.*,
+                t.is_warn,
+                t.record_time,
+                t.point_id,
+                concat(
+                CONVERT ( format((( t.record_value + 0 ) - ifnull( s.init_value, 0 )), 2 ) USING utf8 ),
+                (
+                SELECT
+                sys_dict_data.remark
+                FROM
+                sys_dict_data
+                WHERE
+                ( sys_dict_data.dict_value = s.point_type ))) AS record_value
+            FROM
+            (
+                SELECT
+                    tr.is_warn,
+                    tr.record_time,
+                    tr.record_value,
+                    tr.point_id
+                FROM
+                tab_record tr
+                ORDER BY
+                tr.record_time DESC
+                LIMIT #{num}, #{size}
+            ) t
+            JOIN (
+                SELECT
+                    tp.project_name AS project_name,
+                    tp.project_id AS project_id,
+                    tcf.climb_frame_name AS climb_frame_name,
+                    tcf.climb_frame_id AS climb_frame_id,
+                    tcf.monomer AS monomer,
+                    (
+                    SELECT
+                    sys_dict_data.dict_label
+                    FROM
+                    sys_dict_data
+                    WHERE
+                    ( sys_dict_data.dict_value = tmp.type )) AS type,
+                    tmp.point_name AS point_name,
+                    tmp.monitor_pid AS monitor_pid,
+                    tmp.init_value AS init_value,
+                    tmp.type AS point_type
+                FROM
+                tab_project tp
+                JOIN tab_climb_frame tcf ON tp.project_id = tcf.project_id
+                JOIN tab_monitor_point tmp ON tcf.climb_frame_id = tmp.climb_frame_id
+            ) s ON t.point_id = s.monitor_pid
+    </select>
+
+    <select id="selectRecordCount" parameterType="Record" resultType="java.lang.Integer">
+        SELECT
+            count( tr.record_id )
+        FROM
+        tab_project tp
+        JOIN tab_climb_frame tcf ON tp.project_id = tcf.project_id
+        JOIN tab_monitor_point tmp ON tcf.climb_frame_id = tmp.climb_frame_id
+        JOIN ( SELECT is_warn, record_time, record_value, point_id,record_id FROM tab_record ORDER BY record_time DESC ) tr ON tr.point_id = tmp.monitor_pid
+        <where>
+            <if test="projectId != null"> and tp.project_id = #{projectId}</if>
+            <if test="climbFrameId != null"> and tcf.climb_frame_id = #{climbFrameId}</if>
+            <!--<if test="projectName != null  and projectName != ''"> and project_name like concat('%', #{projectName}, '%')</if>-->
+            <!--<if test="climbFrameName != null  and climbFrameName != ''"> and climb_frame_name like concat('%', #{climbFrameName}, '%')</if>-->
+            <if test="monomer != null  and monomer != ''"> and tcf.monomer = #{monomer}</if>
+            <if test="type != null  and type != ''"> and tmp.type = #{type}</if>
+            <if test="monitorPid != null "> and tmp.monitor_pid = #{monitorPid}</if>
+            <if test="pointName != null and pointName != ''"> and tmp.point_name = #{pointName}</if>
+            <if test="recordValue != null  and recordValue != ''"> and tr.record_value = convert(#{recordValue}, decimal(10,2)) </if>
+            <if test="isWarn != null  and isWarn != ''"> and tr.is_warn = #{isWarn}</if>
+            <if test="recordTime != null "> and DATE_FORMAT(tr.record_time,'%Y-%m-%d') = DATE_FORMAT( #{recordTime} ,'%Y-%m-%d') </if>
+        </where>
+<!--            SELECT-->
+<!--                count( t.record_id )-->
+<!--            FROM-->
+<!--            (-->
+<!--                SELECT-->
+<!--                    tr.record_id,-->
+<!--                    tr.point_id-->
+<!--                FROM-->
+<!--                tab_record tr-->
+<!--                <where> 1=1-->
+<!--                    <if test="recordValue != null  and recordValue != ''"> and tr.record_value = convert(#{recordValue}, decimal(10,2)) </if>-->
+<!--                    <if test="isWarn != null  and isWarn != ''"> and tr.is_warn = #{isWarn}</if>-->
+<!--                    <if test="recordTime != null "> and DATE_FORMAT(tr.record_time,'%Y-%m-%d') = DATE_FORMAT( #{recordTime} ,'%Y-%m-%d') </if>-->
+<!--                </where>-->
+<!--                ORDER BY-->
+<!--                tr.record_time DESC-->
+<!--            ) t-->
+<!--            JOIN (-->
+<!--                SELECT-->
+<!--                    tp.project_id AS project_id,-->
+<!--                    tcf.climb_frame_id AS climb_frame_id,-->
+<!--                    tmp.monitor_pid AS monitor_pid-->
+<!--                FROM-->
+<!--                tab_project tp-->
+<!--                JOIN tab_climb_frame tcf ON tp.project_id = tcf.project_id-->
+<!--                JOIN tab_monitor_point tmp ON tcf.climb_frame_id = tmp.climb_frame_id-->
+<!--                <where> 1=1-->
+<!--                    <if test="projectId != null"> and tp.project_id = #{projectId}</if>-->
+<!--                    <if test="climbFrameId != null"> and tcf.climb_frame_id = #{climbFrameId}</if>-->
+<!--                    <if test="monomer != null  and monomer != ''"> and tcf.monomer = #{monomer}</if>-->
+<!--                    <if test="type != null  and type != ''"> and tmp.type = #{type}</if>-->
+<!--                    <if test="monitorPid != null "> and tmp.monitor_pid = #{monitorPid}</if>-->
+<!--                    <if test="pointName != null and pointName != ''"> and tmp.point_name like concat('%', #{pointName}, '%')</if>-->
+<!--                </where>-->
+<!--            ) s ON t.point_id = s.monitor_pid-->
+    </select>
+</mapper>

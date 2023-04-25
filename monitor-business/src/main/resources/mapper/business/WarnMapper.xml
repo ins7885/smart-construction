@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.WarnMapper">
+
+    <resultMap type="Warn" id="WarnResult">
+        <result property="warnId" column="warn_id"/>
+        <result property="pointId" column="point_id"/>
+        <result property="recordId" column="record_id"/>
+        <result property="warnValue" column="warn_value"/>
+        <result property="warnType" column="warn_type"/>
+        <result property="warnTime" column="warn_time"/>
+        <result property="maxValue" column="max_value"/>
+        <result property="minValue" column="min_value"/>
+        <result property="warnDesc" column="warn_desc"/>
+        <result property="remark" column="remark"/>
+        <result property="warnDeal" column="warn_deal"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <sql id="selectWarnVo">
+        select warn_id, point_id, record_id, warn_value, warn_type, warn_time, max_value, min_value, warn_desc, remark, warn_deal, del_flag from tab_warn
+    </sql>
+
+    <select id="selectWarnList" parameterType="Warn" resultMap="WarnResult">
+        <include refid="selectWarnVo"/>
+        <where>
+            <if test="pointId != null  and pointId != ''">and point_id = #{pointId}</if>
+            <if test="recordId != null  and recordId != ''">and record_id = #{recordId}</if>
+            <if test="warnValue != null  and warnValue != ''">and warn_value = #{warnValue}</if>
+            <if test="warnType != null  and warnType != ''">and warn_type = #{warnType}</if>
+            <if test="warnTime != null ">and warn_time = #{warnTime}</if>
+            <if test="maxValue != null  and maxValue != ''">and max_value = #{maxValue}</if>
+            <if test="minValue != null  and minValue != ''">and min_value = #{minValue}</if>
+            <if test="warnDesc != null  and warnDesc != ''">and warn_desc = #{warnDesc}</if>
+            <if test="warnDeal != null  and warnDeal != ''">and warn_deal = #{warnDeal}</if>
+        </where>
+    </select>
+
+    <select id="selectWarnByWarnId" parameterType="String" resultMap="WarnResult">
+        <include refid="selectWarnVo"/>
+        where warn_id = #{warnId}
+    </select>
+
+    <insert id="insertWarn" parameterType="Warn">
+        insert into tab_warn
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="warnId != null">warn_id,</if>
+            <if test="pointId != null">point_id,</if>
+            <if test="recordId != null">record_id,</if>
+            <if test="warnValue != null">warn_value,</if>
+            <if test="warnType != null">warn_type,</if>
+            <if test="warnTime != null">warn_time,</if>
+            <if test="maxValue != null">max_value,</if>
+            <if test="minValue != null">min_value,</if>
+            <if test="warnDesc != null">warn_desc,</if>
+            <if test="remark != null">remark,</if>
+            <if test="warnDeal != null">warn_deal,</if>
+            <if test="delFlag != null">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="warnId != null">#{warnId},</if>
+            <if test="pointId != null">#{pointId},</if>
+            <if test="recordId != null">#{recordId},</if>
+            <if test="warnValue != null">#{warnValue},</if>
+            <if test="warnType != null">#{warnType},</if>
+            <if test="warnTime != null">#{warnTime},</if>
+            <if test="maxValue != null">#{maxValue},</if>
+            <if test="minValue != null">#{minValue},</if>
+            <if test="warnDesc != null">#{warnDesc},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="warnDeal != null">#{warnDeal},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateWarn" parameterType="Warn">
+        update tab_warn
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pointId != null">point_id = #{pointId},</if>
+            <if test="recordId != null">record_id = #{recordId},</if>
+            <if test="warnValue != null">warn_value = #{warnValue},</if>
+            <if test="warnType != null">warn_type = #{warnType},</if>
+            <if test="warnTime != null">warn_time = #{warnTime},</if>
+            <if test="maxValue != null">max_value = #{maxValue},</if>
+            <if test="minValue != null">min_value = #{minValue},</if>
+            <if test="warnDesc != null">warn_desc = #{warnDesc},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="warnDeal != null">warn_deal = #{warnDeal},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where warn_id = #{warnId}
+    </update>
+
+    <delete id="deleteWarnByWarnId" parameterType="String">
+        delete from tab_warn where warn_id = #{warnId}
+    </delete>
+
+    <delete id="deleteWarnByWarnIds" parameterType="String">
+        delete from tab_warn where warn_id in
+        <foreach item="warnId" collection="array" open="(" separator="," close=")">
+            #{warnId}
+        </foreach>
+    </delete>
+
+    <!--app端需要的告警信息分页查询-->
+    <select id="getWarnMessagePage" resultType="com.zkjd.business.vo.WarnMessageVO">
+         select tw.warn_id,tw.warn_time,tw.warn_value,tw.min_value,tw.max_value, tw.warn_desc,tw.point_id,tcf.monomer,tt.project_name
+         from tab_warn  tw
+         LEFT JOIN tab_monitor_point mp on mp.monitor_pid = tw.point_id
+         LEFT JOIN tab_climb_frame tcf on tcf.climb_frame_id = mp.climb_frame_id
+         LEFT JOIN tab_project tt on tt.project_id = tcf.project_id
+         where tw.del_flag = '0' and tcf.climb_frame_id = #{climbFrameId}
+         order by tw.warn_time desc limit #{page},#{pageSize}
+    </select>
+
+    <!--统计分析中,点击跳转显示告警详情-->
+    <select id="selectWarnDataList" resultType="com.zkjd.business.vo.WarnMessageVO">
+        select tw.warn_id,tw.warn_time,tw.warn_value,tw.min_value,tw.max_value, tw.warn_desc,tw.point_id,tcf.monomer,tt.project_name
+        from tab_warn  tw
+                 LEFT JOIN tab_monitor_point mp on mp.monitor_pid = tw.point_id
+                 LEFT JOIN tab_climb_frame tcf on tcf.climb_frame_id = mp.climb_frame_id
+                 LEFT JOIN tab_project tt on tt.project_id = tcf.project_id
+        where tw.del_flag = '0' and tcf.climb_frame_id = #{climbFrameId}
+          and date_format(tw.warn_time,'%y%m%d') &gt;= date_format(#{params.startTime},'%y%m%d')
+          and date_format(tw.warn_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+        order by tw.warn_time desc
+    </select>
+
+    <!--app端获取按月份查询告警数量-->
+    <select id="getWarningByMonth" resultType="com.zkjd.business.vo.WarningDataVO">
+        SELECT
+            count(*) number,
+            mid( warn_time, 1, 7 ) AS MONTH
+        FROM
+            tab_warn
+        WHERE warn_time BETWEEN #{firstSecond} and #{lastSecond}
+        AND point_id IN ( SELECT monitor_pid FROM tab_monitor_point WHERE climb_frame_id = #{climbFrameId} )
+        GROUP BY MONTH
+    </select>
+
+    <!--app端获取按月份查询提升次数(暂时放在该mapper文件下)-->
+    <select id="getRiseDataByMon" resultType="com.zkjd.business.vo.AppRiseDataVO">
+         select
+            sum(case month(rise_time) when '1'  then rise_number else 0 end) as janData,
+            sum(case month(rise_time) when '2'  then rise_number else 0 end) as febData,
+            sum(case month(rise_time) when '3'  then rise_number else 0 end) as marData,
+            sum(case month(rise_time) when '4'  then rise_number else 0 end) as aprData,
+            sum(case month(rise_time) when '5'  then rise_number else 0 end) as mayData,
+            sum(case month(rise_time) when '6'  then rise_number else 0 end) as juneData,
+            sum(case month(rise_time) when '7'  then rise_number else 0 end) as julyData,
+            sum(case month(rise_time) when '8'  then rise_number else 0 end) as augData,
+            sum(case month(rise_time) when '9'  then rise_number else 0 end) as septData,
+            sum(case month(rise_time) when '10' then rise_number  else 0 end) as octData,
+            sum(case month(rise_time) when '11' then rise_number  else 0 end) as novData,
+            sum(case month(rise_time) when '12' then rise_number  else 0 end) as deceData
+        from tab_rise_record
+        where year(rise_time)= DATE_FORMAT(NOW(), '%Y') AND climb_frame_id = #{climbFrameId}
+    </select>
+
+    <select id="getWarnTodayCount" resultType="java.lang.Integer">
+        SELECT COUNT(warn_id) FROM tab_warn WHERE to_days(warn_time) = to_days(now())
+    </select>
+
+    <select id="selectLatelyWarn" resultType="com.zkjd.business.domain.Warn">
+        SELECT
+            warn_time,
+            warn_desc
+        FROM
+            tab_warn
+        ORDER BY
+            warn_time DESC
+            LIMIT 5
+    </select>
+
+    <select id="getMonthWarnCount" resultType="com.zkjd.business.vo.WarningDataVO">
+        SELECT
+            MONTH ( warn_time ) AS month,
+            count( warn_id ) number
+        FROM
+            tab_warn
+        WHERE
+            YEAR ( warn_time ) = DATE_FORMAT( NOW(), '%Y' )
+        GROUP BY
+        month
+    </select>
+
+    <!--统计分析中,根据爬架ID和时间范围获取告警数-->
+    <select id="getWarnNumberByTime" parameterType="com.zkjd.business.qo.StatisticsQO" resultType="integer">
+        select count(1)
+        from tab_warn tw
+         LEFT JOIN tab_monitor_point mp on mp.monitor_pid = tw.point_id
+         LEFT JOIN tab_climb_frame tcf on tcf.climb_frame_id = mp.climb_frame_id
+         LEFT JOIN tab_project tt on tt.project_id = tcf.project_id
+        where tw.del_flag = '0'
+          and tcf.climb_frame_id = #{climbFrameId}
+          and date_format(tw.warn_time, '%Y-%m-%d') between #{startTime} and #{endTime}
+    </select>
+
+    <!--统计分析中,根据爬架ID和时间范围获取每天的告警数 -->
+    <select id="getEveryWarnNumberByTime" parameterType="com.zkjd.business.qo.StatisticsQO" resultType="com.zkjd.business.vo.WarnDataVO">
+        select count(1) as number,mid(tw.warn_time,1,10) as dateStr
+        from tab_warn tw
+                 LEFT JOIN tab_monitor_point mp on mp.monitor_pid = tw.point_id
+                 LEFT JOIN tab_climb_frame tcf on tcf.climb_frame_id = mp.climb_frame_id
+                 LEFT JOIN tab_project tt on tt.project_id = tcf.project_id
+        where tw.del_flag = '0' and tcf.climb_frame_id = #{climbFrameId}
+          and date_format(tw.warn_time, '%Y-%m-%d') between #{startTime} and #{endTime} GROUP BY date_format(tw.warn_time, '%Y-%m-%d')
+    </select>
+
+    <!--测试用-->
+    <!--<select id="getEveryWarnNumberByTime" parameterType="com.zkjd.business.qo.StatisticsQO" resultType="com.zkjd.business.vo.WarnDataVO">-->
+    <!--    select count(1) as number,mid(tw.warn_time,1,10) as dateStr-->
+    <!--    from tab_warn tw-->
+    <!--             LEFT JOIN tab_monitor_point mp on mp.monitor_pid = tw.point_id-->
+    <!--             LEFT JOIN tab_climb_frame tcf on tcf.climb_frame_id = mp.climb_frame_id-->
+    <!--             LEFT JOIN tab_project tt on tt.project_id = tcf.project_id-->
+    <!--    where tw.del_flag = '0'-->
+    <!--      and date_format(tw.warn_time, '%Y-%m-%d') between #{startTime} and #{endTime} GROUP BY date_format(tw.warn_time, '%Y-%m-%d')-->
+    <!--</select>-->
+
+    <select id="getUserIdByPointId" resultType="java.lang.Long">
+        SELECT
+            user_id
+        FROM
+            sys_user
+        WHERE
+            project_id IN (
+            SELECT
+                s.project_id
+            FROM
+                tab_warn tw
+                LEFT JOIN (
+                SELECT
+                    tcf.climb_frame_id,
+                    tcf.project_id,
+                    tmp.monitor_pid
+                FROM
+                    tab_climb_frame tcf
+                    LEFT JOIN tab_monitor_point tmp ON tcf.climb_frame_id = tmp.climb_frame_id
+                ) s ON tw.point_id = s.monitor_pid
+                WHERE
+                s.monitor_pid = #{pointId}
+            )
+    </select>
+</mapper>

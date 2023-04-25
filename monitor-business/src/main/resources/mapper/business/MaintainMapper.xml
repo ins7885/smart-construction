@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.MaintainMapper">
+
+    <resultMap type="Maintain" id="MaintainResult">
+        <result property="id" column="id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="projectName" column="project_name"/>
+        <result property="mainName" column="main_name"/>
+        <result property="itemKey" column="item_key"/>
+        <result property="itemName" column="item_name"/>
+        <result property="content" column="content"/>
+        <result property="manSign" column="man_sign"/>
+        <result property="mainTime" column="main_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="climbFrameId" column="climb_frame_id"/>
+        <result property="climbFrameName" column="climb_frame_name"/>
+    </resultMap>
+
+    <sql id="selectMaintainVo">
+        select id, project_id, project_name, main_name, item_key, item_name, content, man_sign, main_time, create_by, create_time, update_by, update_time, del_flag,climb_frame_id,climb_frame_name from tab_maintain
+    </sql>
+
+    <select id="selectMaintainList" parameterType="Maintain" resultMap="MaintainResult">
+        <include refid="selectMaintainVo"/>
+        <where>
+            del_flag = 0
+            <if test="projectId != null ">and project_id = #{projectId}</if>
+            <if test="projectName != null  and projectName != ''">and project_name like concat('%', #{projectName},
+                '%')
+            </if>
+            <if test="mainName != null  and mainName != ''">and main_name like concat('%', #{mainName}, '%')</if>
+            <if test="itemKey != null  and itemKey != ''">and item_key = #{itemKey}</if>
+            <if test="itemName != null  and itemName != ''">and item_name like concat('%', #{itemName}, '%')</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="manSign != null  and manSign != ''">and man_sign = #{manSign}</if>
+            <if test="climbFrameId != null  and climbFrameId != ''">and climb_frame_id = #{climbFrameId}</if>
+            <if test="climbFrameName != null  and climbFrameName != ''">and climb_frame_name = #{climbFrameName}</if>
+            <if test="mainTime != null ">and main_time = #{mainTime}</if>
+        </where>
+    </select>
+
+    <select id="selectMaintainById" parameterType="Long" resultMap="MaintainResult">
+        <include refid="selectMaintainVo"/>
+        where id = #{id} and del_flag = 0
+    </select>
+
+    <insert id="insertMaintain" parameterType="Maintain" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_maintain
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">project_id,</if>
+            <if test="projectName != null">project_name,</if>
+            <if test="mainName != null">main_name,</if>
+            <if test="itemKey != null">item_key,</if>
+            <if test="itemName != null">item_name,</if>
+            <if test="content != null">content,</if>
+            <if test="manSign != null">man_sign,</if>
+            <if test="mainTime != null">main_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="climbFrameId != null">climb_frame_id,</if>
+            <if test="climbFrameName != null">climb_frame_name,</if>
+            <if test="delFlag != null">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">#{projectId},</if>
+            <if test="projectName != null">#{projectName},</if>
+            <if test="mainName != null">#{mainName},</if>
+            <if test="itemKey != null">#{itemKey},</if>
+            <if test="itemName != null">#{itemName},</if>
+            <if test="content != null">#{content},</if>
+            <if test="manSign != null">#{manSign},</if>
+            <if test="mainTime != null">#{mainTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="climbFrameId != null">#{climbFrameId},</if>
+            <if test="climbFrameName != null">#{climbFrameName},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMaintain" parameterType="Maintain">
+        update tab_maintain
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="projectName != null">project_name = #{projectName},</if>
+            <if test="mainName != null">main_name = #{mainName},</if>
+            <if test="itemKey != null">item_key = #{itemKey},</if>
+            <if test="itemName != null">item_name = #{itemName},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="manSign != null">man_sign = #{manSign},</if>
+            <if test="mainTime != null">main_time = #{mainTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="climbFrameId != null">climb_frame_id = #{climbFrameId},</if>
+            <if test="climbFrameName != null">climb_frame_name = #{climbFrameName},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMaintainById" parameterType="Long">
+        delete from tab_maintain where id = #{id}
+    </delete>
+
+    <delete id="deleteMaintainByIds" parameterType="Long">
+        delete from tab_maintain where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--技术人员 - 附着式升降脚手架提升及维护保养记录分页查询-->
+    <select id="getMaintainPage" resultType="com.zkjd.business.domain.Maintain">
+        select * from tab_maintain
+        where del_flag = 0 and climb_frame_id = #{climbFrameId}
+        order by main_time desc limit #{page},#{pageSize}
+    </select>
+</mapper>

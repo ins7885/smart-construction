@@ -1,0 +1,8 @@
+Application Version: ${zkjd.version}
+Spring Boot Version: ${spring-boot.version}
+                      .__  __
+  _____   ____   ____ |__|/  |_  ___________
+ /     \ /  _ \ /    \|  \   __\/  _ \_  __ \
+|  Y Y  (  <_> )   |  \  ||  | (  <_> )  | \/
+|__|_|  /\____/|___|  /__||__|  \____/|__|
+      \/            \/

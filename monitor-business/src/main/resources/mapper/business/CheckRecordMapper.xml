@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkjd.business.mapper.CheckRecordMapper">
+
+    <resultMap type="CheckRecord" id="CheckRecordResult">
+        <result property="id" column="id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="climbFrameId" column="climb_frame_id"/>
+        <result property="monomer" column="monomer"/>
+        <result property="monomerSite" column="monomer_site"/>
+        <result property="generalUnit" column="general_unit"/>
+        <result property="subUnit" column="sub_unit"/>
+        <result property="underUnit" column="under_unit"/>
+        <result property="generalUnitMan" column="general_unit_man"/>
+        <result property="subUnitMan" column="sub_unit_man"/>
+        <result property="underUnitMan" column="under_unit_man"/>
+        <result property="checkConclusion" column="check_conclusion"/>
+        <result property="subManSign" column="sub_man_sign"/>
+        <result property="monomerCheckSign" column="monomer_check_sign"/>
+        <result property="projectManagerSign" column="project_manager_sign"/>
+        <result property="projectSafeSign" column="project_safe_sign"/>
+        <result property="productionSign" column="production_sign"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="projectName" column="project_name"/>
+        <result property="dictType" column="dict_type"/>
+    </resultMap>
+
+    <sql id="selectCheckRecordVo">
+        select id, project_id, climb_frame_id, monomer, monomer_site, general_unit, sub_unit, under_unit, general_unit_man, sub_unit_man, under_unit_man, check_conclusion, sub_man_sign, monomer_check_sign, project_manager_sign, project_safe_sign, production_sign, create_by, create_time, update_by, update_time, del_flag, project_name, dict_type from tab_check_record
+    </sql>
+
+    <select id="selectCheckRecordList" parameterType="CheckRecord" resultMap="CheckRecordResult">
+        <include refid="selectCheckRecordVo"/>
+        <where>
+            del_flag = 0
+            <if test="projectId != null ">and project_id = #{projectId}</if>
+            <if test="climbFrameId != null ">and climb_frame_id = #{climbFrameId}</if>
+            <if test="monomer != null  and monomer != ''">and monomer = #{monomer}</if>
+            <if test="monomerSite != null  and monomerSite != ''">and monomer_site = #{monomerSite}</if>
+            <if test="generalUnit != null  and generalUnit != ''">and general_unit = #{generalUnit}</if>
+            <if test="subUnit != null  and subUnit != ''">and sub_unit = #{subUnit}</if>
+            <if test="underUnit != null  and underUnit != ''">and under_unit = #{underUnit}</if>
+            <if test="generalUnitMan != null  and generalUnitMan != ''">and general_unit_man = #{generalUnitMan}</if>
+            <if test="subUnitMan != null  and subUnitMan != ''">and sub_unit_man = #{subUnitMan}</if>
+            <if test="underUnitMan != null  and underUnitMan != ''">and under_unit_man = #{underUnitMan}</if>
+            <if test="checkConclusion != null ">and check_conclusion = #{checkConclusion}</if>
+            <if test="subManSign != null  and subManSign != ''">and sub_man_sign = #{subManSign}</if>
+            <if test="monomerCheckSign != null  and monomerCheckSign != ''">and monomer_check_sign =
+                #{monomerCheckSign}
+            </if>
+            <if test="projectManagerSign != null  and projectManagerSign != ''">and project_manager_sign =
+                #{projectManagerSign}
+            </if>
+            <if test="projectSafeSign != null  and projectSafeSign != ''">and project_safe_sign = #{projectSafeSign}
+            </if>
+            <if test="productionSign != null  and productionSign != ''">and production_sign = #{productionSign}</if>
+            <if test="projectName != null  and projectName != ''">and project_name like concat('%', #{projectName},
+                '%')
+            </if>
+            <if test="dictType != null  and dictType != ''">and dict_type = #{dictType}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectCheckRecordById" parameterType="Long" resultMap="CheckRecordResult">
+        <include refid="selectCheckRecordVo"/>
+        where id = #{id} and del_flag = 0
+    </select>
+
+    <insert id="insertCheckRecord" parameterType="CheckRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into tab_check_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">project_id,</if>
+            <if test="climbFrameId != null">climb_frame_id,</if>
+            <if test="monomer != null">monomer,</if>
+            <if test="monomerSite != null">monomer_site,</if>
+            <if test="generalUnit != null">general_unit,</if>
+            <if test="subUnit != null">sub_unit,</if>
+            <if test="underUnit != null">under_unit,</if>
+            <if test="generalUnitMan != null">general_unit_man,</if>
+            <if test="subUnitMan != null">sub_unit_man,</if>
+            <if test="underUnitMan != null">under_unit_man,</if>
+            <if test="checkConclusion != null">check_conclusion,</if>
+            <if test="subManSign != null">sub_man_sign,</if>
+            <if test="monomerCheckSign != null">monomer_check_sign,</if>
+            <if test="projectManagerSign != null">project_manager_sign,</if>
+            <if test="projectSafeSign != null">project_safe_sign,</if>
+            <if test="productionSign != null">production_sign,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="projectName != null">project_name,</if>
+            <if test="dictType != null">dict_type,</if>
+            <if test="lon != null">lon,</if>
+            <if test="lat != null">lat,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">#{projectId},</if>
+            <if test="climbFrameId != null">#{climbFrameId},</if>
+            <if test="monomer != null">#{monomer},</if>
+            <if test="monomerSite != null">#{monomerSite},</if>
+            <if test="generalUnit != null">#{generalUnit},</if>
+            <if test="subUnit != null">#{subUnit},</if>
+            <if test="underUnit != null">#{underUnit},</if>
+            <if test="generalUnitMan != null">#{generalUnitMan},</if>
+            <if test="subUnitMan != null">#{subUnitMan},</if>
+            <if test="underUnitMan != null">#{underUnitMan},</if>
+            <if test="checkConclusion != null">#{checkConclusion},</if>
+            <if test="subManSign != null">#{subManSign},</if>
+            <if test="monomerCheckSign != null">#{monomerCheckSign},</if>
+            <if test="projectManagerSign != null">#{projectManagerSign},</if>
+            <if test="projectSafeSign != null">#{projectSafeSign},</if>
+            <if test="productionSign != null">#{productionSign},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="projectName != null">#{projectName},</if>
+            <if test="dictType != null">#{dictType},</if>
+            <if test="lon != null">#{lon},</if>
+            <if test="lat != null">#{lat},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCheckRecord" parameterType="CheckRecord">
+        update tab_check_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="climbFrameId != null">climb_frame_id = #{climbFrameId},</if>
+            <if test="monomer != null">monomer = #{monomer},</if>
+            <if test="monomerSite != null">monomer_site = #{monomerSite},</if>
+            <if test="generalUnit != null">general_unit = #{generalUnit},</if>
+            <if test="subUnit != null">sub_unit = #{subUnit},</if>
+            <if test="underUnit != null">under_unit = #{underUnit},</if>
+            <if test="generalUnitMan != null">general_unit_man = #{generalUnitMan},</if>
+            <if test="subUnitMan != null">sub_unit_man = #{subUnitMan},</if>
+            <if test="underUnitMan != null">under_unit_man = #{underUnitMan},</if>
+            <if test="checkConclusion != null">check_conclusion = #{checkConclusion},</if>
+            <if test="subManSign != null">sub_man_sign = #{subManSign},</if>
+            <if test="monomerCheckSign != null">monomer_check_sign = #{monomerCheckSign},</if>
+            <if test="projectManagerSign != null">project_manager_sign = #{projectManagerSign},</if>
+            <if test="projectSafeSign != null">project_safe_sign = #{projectSafeSign},</if>
+            <if test="productionSign != null">production_sign = #{productionSign},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="projectName != null">project_name = #{projectName},</if>
+            <if test="dictType != null">dict_type = #{dictType},</if>
+            <if test="lon != null">lon = #{lon},</if>
+            <if test="lon != null">lon = #{lon},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCheckRecordById" parameterType="Long">
+        delete from tab_check_record where id = #{id}
+    </delete>
+
+    <delete id="deleteCheckRecordByIds" parameterType="String">
+        delete from tab_check_record where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--技术人员 - 使用前检查分页查询-->
+    <select id="getCheckRecordPage" resultType="com.zkjd.business.domain.CheckRecord">
+        select * from tab_check_record
+        where del_flag = 0 and climb_frame_id = #{climbFrameId}
+        order by create_time desc limit #{page},#{pageSize}
+    </select>
+
+    <select id="getLatelyCheckRecord" resultType="com.zkjd.business.vo.CheckRecordVO">
+        SELECT
+            sd.dict_name type,
+            date_format( tc.create_time, '%Y-%m-%d %H:%i:%S' ) timeStr,
+            IFNULL(tc.monomer,'未知楼栋') monomer,
+        CASE
+                tc.check_conclusion
+                WHEN 2 THEN
+                '不合格' ELSE '合格'
+            END checkConclusionText,
+            IFNULL(( SELECT climb_frame_name FROM tab_climb_frame WHERE climb_frame_id = tc.climb_frame_id ),'未知爬架') climbFrameName
+        FROM
+            tab_check_record tc
+            LEFT JOIN sys_dict_type sd ON tc.dict_type = sd.dict_type
+        WHERE
+            sd.dict_type IN ( 'device_check', 'device_check_rise', 'climb_check' )
+            ORDER BY tc.create_time DESC LIMIT 10
+    </select>
+
+    <select id="getUseCheckNumber" parameterType="com.zkjd.business.qo.StatisticsQO" resultType="integer">
+        select count(1)
+        from tab_check_record
+        where climb_frame_id = #{climbFrameId} and check_conclusion = 1
+          and date_format(create_time, '%Y-%m-%d') between #{startTime} and #{endTime}
+    </select>
+
+</mapper>
